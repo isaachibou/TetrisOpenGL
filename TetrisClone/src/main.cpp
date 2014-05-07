@@ -3,10 +3,13 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <windows.h>
+#include <unistd.h>
+#include <time.h>
 
-#include "canvas.h"
 #include "board.h"
 #include "shape.h"
+#include "GlWindow.h"
+#include "canvas.h"
 
 #include <iostream>
 
@@ -21,20 +24,8 @@ int main(int argc, char *argv[])
     system("mode con LINES=50 COLS=80");
 
     Canvas win;
-    Shape Current;
+    win.show();
+//    win.Fall();
 
-    Board Solid, Ghost;
-
-    Current.GetShape();
-    //Current.drawShape();
-
-
-    Solid.SpawnShape(Current);
-    Solid.DropShape(Current,2);
-    Solid.DrawConsoleBoard();
-
-
-    printf("\n\n");
-
-	return app.exec();
+    return app.exec();
 }

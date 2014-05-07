@@ -28,21 +28,23 @@ public:
     int* DevelopFloor(int i);
 
     // Action
-    void SpawnShape(Shape s);
-    void DropShape(Shape s, int i);
-    void LandShape(Board Ghost, Shape s, int i);
-    bool DetectCollision(Board Ghost, Shape s, int i);
+    bool SpawnShape(Board Solid, Shape s);
+    void DropShape(int i);
+    void LandShape(Board Ghost, int h, int i);
+    bool DetectCollision(Board Ghost, int h, int i);
+    void MoveLeft();
+    void MoveRight();
 
 
     // Display
     void DrawConsoleBoard();
-    void ReInitBoard();
+    void ReInitBoard(int h, int w);
 
 private:
     // Attributes
     int height;
     int width;
-    int* Floor;
+    int Floor[40];
 };
 
 #endif // BOARD_H

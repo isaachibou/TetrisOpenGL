@@ -7,7 +7,6 @@
 
 #include "board.h"
 #include "shape.h"
-#include "canvas.h"
 
 class Game
 {

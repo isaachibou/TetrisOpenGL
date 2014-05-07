@@ -1,123 +1,266 @@
-#include "canvas.h"
+#include "Canvas.h"
 
-#include "iostream"
+
+#include "Shapes/Basis.h"
+
+#include <iostream>
 
 using namespace std;
 
-// Axis Stuff
-GLfloat g_TabVertices[]=
-{
-    0,0,0,
-    0,40,0,
-    0,0,0,
-    10,0,0,
-    10,0,0,
-    10,40,0
-};
 
-GLfloat g_TabColors[]=
-{
-    0,1,0,
-    0,1,0,
-    0,1,0,
-    0,1,0,
-    0,1,0,
-    0,1,0
-};
+GLfloat angle1 = 30.0f;
+GLfloat angle2 = 20.0f;
 
-// E Shape
-GLfloat EColor[]={  127,0,255,127,0,255,127,0,255,127,0,255,127,0,255,127,0,255,127,0,255,127,0,255,127,0,255,};
+const GLfloat g_AngleSpeed = 10.0f;
 
-GLfloat EShape[]= {0,0,0,1,0,0,2,0,0,3,0,0,0,1,0,1,1,0,2,1,0,3,1,0,1,2,0,2,2,0};
 
-GLuint EIndices[] = {0,1,5,5,4,0,1,2,6,6,5,1,2,3,7,7,6,2,5,6,9,9,8,5};
+Basis* g_Basis;
 
-    // Constructors
+
 Canvas::Canvas()
 {
-   this->board.ReInitBoard();
-   this->ghost.ReInitBoard();
+    setWindowTitle(trUtf8("IN55-Canvas"));
+
+    g_Basis = new Basis( 10.0 );
+
 }
 
-    // Accessors
-Board
-Canvas::getBoard()
+
+Canvas::~Canvas()
 {
-    return this->board;
+    delete g_Basis;
+}
+
+    /* Access */
+Board
+Canvas::getSolid()
+{
+    return this->Solid;
 }
 
 Board
 Canvas::getGhost()
 {
-    return this->ghost;
+    return this->Ghost;
 }
 
+void
+Canvas::setSolidFloor(int i, int v)
+{
+    this->Solid.setFloor(i,v);
+}
 
-    // Drawings
+int
+Canvas::getSolidFloor(int i)
+{
+    this->Solid.getFloor(i);
+}
+
+    /* Actions */
+bool
+Canvas::Spawn(Shape s)
+{
+    return this->Ghost.SpawnShape(getSolid(),s);
+}
+
+void
+Canvas::Drop(int i)
+{
+   this->Ghost.DropShape(i);
+}
+
+void
+Canvas::Fall()
+{
+    int h = this->Current.getHeight();
+    for(int i=4;i<44;i++)
+    {
+        if( !getSolid().DetectCollision(getGhost(),h,i) )
+        {
+            Drop(i);
+            system("cls");
+            getGhost().DrawConsoleBoard();
+        }
+    }
+}
+
+void
+Canvas::Left()
+{
+    int *tmp;
+    bool end = 0;
+    for(int i=0; i< this->Current.getHeight(); i++)
+    {
+        tmp = this->Ghost.DevelopFloor(i);
+        if( tmp[0] != 0 )
+        {
+            system("cls");
+            end = 1;
+        }
+    }
+    if( !end )
+    {
+        for(int i=0; i< this->Current.getHeight(); i++)
+        {
+            tmp = this->Ghost.DevelopFloor(i);
+            if(this->Ghost.getFloor(i) != 0)
+            {
+                this->Ghost.setFloor(i,this->Ghost.getFloor(i) << 1);
+            }
+        }
+    }
+        system("cls");
+        getGhost().DrawConsoleBoard();
+}
+
+void
+Canvas::Right()
+{
+    int *tmp;
+    bool end = 0;
+    for(int i=0; i< this->Current.getHeight(); i++)
+    {
+        tmp = this->Ghost.DevelopFloor(i);
+        if( tmp[9] != 0 )
+        {
+            system("cls");
+            end = 1;
+        }
+    }
+    if( !end )
+    {
+        for(int i=0; i< this->Current.getHeight(); i++)
+        {
+            tmp = this->Ghost.DevelopFloor(i);
+            if(this->Ghost.getFloor(i) != 0)
+            {
+                this->Ghost.setFloor(i,this->Ghost.getFloor(i) >> 1);
+            }
+        }
+    }
+        system("cls");
+        getGhost().DrawConsoleBoard();
+}
+
+void
+Canvas::Rotate()
+{
+    int i = this->Current.getIndex();
+    int tmp;
+    i++;
+
+    for(int k=0; k< this->Current.getHeight(); k++)
+    {
+        // top line of the shape found
+        if(this->Ghost.getFloor(k) != 0)
+        {
+            for(int j=0; j<this->Current.getHeight();j++)
+            {
+                // Replace line with rotated shape line
+                tmp = this->Current.getLineRotation(this->Current.getIndex(),i,j);
+                this->Ghost.setFloor(i,tmp);
+            }
+            break;
+        }
+    }
+}
+
+int
+Canvas::getShapeHeigth()
+{
+    return this->Current.getHeight();
+}
+
+void
+Canvas::GenShape()
+{
+    this->Current.GetShape();
+    this->Current.setIndex(0);
+}
+
+    /* Drawing */
 bool
 Canvas::initializeObjects()
 {
     // Fond gris
-    glClearColor( 0.5f, 0.5f, 0.5f, 1.0f );
+    glClearColor( 0.2f, 0.2f, 0.2f, 1.0f );
     glEnable( GL_DEPTH_TEST );
 
     // Chargement des shaders
     createShader( "Shaders/color" );
 
+    cout << "Shader color: ";
+    if (useShader( "color" ))
+    {
+        cout << "Loaded!" << endl;
+    }
+    else
+    {
+        cout << "NOT Loaded!" << endl;
+    }
+
+    glScalef(0.04f, 0.04f, 0.1f);
+    glTranslatef(-22,-22,0);
+
+    /** Spawn the Shape **/
+    GenShape();
+    bool b;
+    b=Spawn(Current);
+//    getGhost().DrawConsoleBoard();
+
+
+
     return true;
 }
-
 
 void
 Canvas::render()
 {
-    // Initialisation de la caméra
-    lookAt( 12, 30, 75, 12, 30, 50);
-
-
     // Rendu des objets
     pushMatrix();
-
-
-        computeAncillaryMatrices();
-
-        useShader( "color" );
-        GLint var_id = glGetUniformLocation( getCurrentShaderId(), "MVP" );
-        transmitMVP( var_id );
-
-
-            GLint var1 = glGetAttribLocation( getCurrentShaderId(), "position" );
-            glEnableVertexAttribArray( var1 );
-            glVertexAttribPointer( var1, 3, GL_FLOAT, GL_FALSE, 0, g_TabVertices );
-            GLint var2 = glGetAttribLocation( getCurrentShaderId(), "color" );
-            glEnableVertexAttribArray( var2 );
-            glVertexAttribPointer( var2, 3, GL_FLOAT, GL_FALSE, 0, g_TabColors );
-            glDrawArrays( GL_LINES, 0, 8 );
-            glDisableVertexAttribArray( var1 );
-            glDisableVertexAttribArray( var2 );
+        drawFrame();
     popMatrix();
     pushMatrix();
-        //drawBoard();
+        drawBoard();
     popMatrix();
-   /* pushMatrix();
-        translate(3,38,0);
-        drawEShape();
-    popMatrix();*/
+    pushMatrix();
+        drawGhost();
+    popMatrix();
+
+}
+
+void
+Canvas::drawFrame()
+{
+    glBegin(GL_LINE_STRIP);
+        glColor3f(0.0f, 1.0f, 0.0f);
+        glVertex3f(0.0f, 40.0f, 0.0f);
+        glVertex3f(0.0f, 0.0f, 0.0f);
+        glVertex3f(10.0f, 0.0f, 0.0f);
+        glVertex3f(10.0f, 40.0f, 0.0f);
+    glEnd();
 }
 
 void
 Canvas::drawBoard()
 {
-    int h=getBoard().getHeight();
-    int w=getBoard().getWidth();
+    int h=getSolid().getHeight();
+    int w=getSolid().getWidth();
     int* tmp;
     for(int i=0; i < h; i++)
     {
-        tmp = getBoard().DevelopFloor(i);
+        tmp = getSolid().DevelopFloor(i);
         for(int j=0; j < w; j++)
         {
             if(tmp[j] == 1)
             {
+                glBegin(GL_LINE_LOOP);
+                    glColor3f(1.0f, 1.0f, 1.0f);
+                    glVertex3f(j,h-i-1,0.0f);
+                    glVertex3f(j,h-i,0.0f);
+                    glVertex3f(j+1,h-i,0.0f);
+                    glVertex3f(j+1,h-i-1,0.0f);
+                glEnd();
                 glColor3f(0.0f, 0.0f, 1.0f);
                 glRecti(j,h-i-1,j+1,h-i);
             }
@@ -126,48 +269,34 @@ Canvas::drawBoard()
 }
 
 void
-Canvas::drawEShape()
+Canvas::drawGhost()
 {
-    GLuint ebo;
-    computeAncillaryMatrices();
-
-    useShader( "color" );
-    GLint var_id = glGetUniformLocation( getCurrentShaderId(), "MVP" );
-    transmitMVP( var_id );
-
-    glGenBuffers(1, &ebo);
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER,sizeof(EIndices),EIndices,GL_STATIC_DRAW);
-    GLint var1 = glGetAttribLocation( getCurrentShaderId(), "position" );
-    glEnableVertexAttribArray( var1 );
-    glVertexAttribPointer( var1, 3, GL_FLOAT, GL_FALSE, 0, EShape );
-    GLint var2 = glGetAttribLocation( getCurrentShaderId(), "color" );
-    glEnableVertexAttribArray( var2 );
-    glVertexAttribPointer( var2, 3, GL_FLOAT, GL_FALSE, 0, EColor );
-    glDrawElements(GL_TRIANGLES, 27, GL_UNSIGNED_INT, 0);
-    glDisableVertexAttribArray( var1 );
-    glDisableVertexAttribArray( var2 );
+    int h=getSolid().getHeight();
+    int w=getSolid().getWidth();
+    int* tmp;
+    for(int i=0; i < h; i++)
+    {
+        tmp = getGhost().DevelopFloor(i);
+        for(int j=0; j < w; j++)
+        {
+            if(tmp[j] == 1)
+            {
+                glBegin(GL_LINE_LOOP);
+                    glColor3f(1.0f, 1.0f, 1.0f);
+                    glVertex3f(j,h-i-1,0.0f);
+                    glVertex3f(j,h-i,0.0f);
+                    glVertex3f(j+1,h-i,0.0f);
+                    glVertex3f(j+1,h-i-1,0.0f);
+                glEnd();
+                glColor3f(0.0f, 0.0f, 1.0f);
+                glRecti(j,h-i-1,j+1,h-i);
+            }
+        }
+    }
 }
 
-    // Key Input Handling
-void
-Canvas::Rotate()
-{
-    rotate( 90, 0, 0, 1 );
-}
 
-void Canvas::MoveLeft()
-{
-   // pushMatrix();
-        translate(-1,0,0);
-   //popMatrix();
-}
-
-void Canvas::MoveRight()
-{
-    translate(1,0,0);
-}
-
+    /* Key Handling */
 void
 Canvas::keyPressEvent( QKeyEvent* event )
 {
@@ -178,11 +307,11 @@ Canvas::keyPressEvent( QKeyEvent* event )
             break;
 
         case Qt::Key_Left:
-            MoveLeft();
+            Left();
             break;
 
         case Qt::Key_Right:
-            MoveRight();
+            Right();
             break;
 
         case Qt::Key_Up:
@@ -190,12 +319,11 @@ Canvas::keyPressEvent( QKeyEvent* event )
             break;
 
         case Qt::Key_Down:
-
+            Drop(4);
             break;
 
         case Qt::Key_R:
-
+            angle1 = angle2 = 0.0f;
             break;
     }
 }
-

@@ -22,6 +22,9 @@ public:
     // Calculation
     int* DevelopFloor(int i);
     int getHeight();
+    int getIndex();
+    void setIndex(int value);
+    int getLineRotation(int rotation, int index,int k);
 
     // Display
     void drawShape();
@@ -33,7 +36,7 @@ public:
 
 private:
     // Attributes
-    int* Lines;
+    int Lines[4];
     int index;
     int Collection[7][4][4]=
     {

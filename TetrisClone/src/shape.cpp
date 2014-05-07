@@ -9,17 +9,15 @@ Shape::Shape()
 {
     this->index = 0;
 
-    this->Lines = (int*) malloc(4* sizeof(int));
-    if(this->Lines == NULL)
+    for(int i=0;i<4;i++)
     {
-        printf("\n\n Shape Memory Allocation Failed");
-        exit(0);
+        this->Lines[i] = 0;
     }
 }
 
 Shape::~Shape()
 {
-    free(this->Lines);
+
 }
 
     // Accessors
@@ -64,13 +62,33 @@ int
 Shape::getHeight()
 {
     int h=0;
+
     for(int i=0;i<4;i++)
     {
-        if(this->Lines[i] !=0)
+        if(this->Lines[i] != 0)
         { h++; }
+
     }
 
     return h;
+}
+
+int
+Shape::getIndex()
+{
+    return this->index;
+}
+
+void
+Shape::setIndex(int value)
+{
+    this->index = value;
+}
+
+int
+Shape::getLineRotation(int rotation, int index,int k)
+{
+    return this->Collection[index][rotation][k];
 }
     // Display
 void
@@ -109,7 +127,7 @@ Shape::GetShape()
 
     for(int i=0;i<4;i++)
     {
-        this->Lines[i] = this->Collection[2][0][i];
+        this->Lines[i] = this->Collection[randNum][0][i];
     }
 
     this->index = randNum;

@@ -10,12 +10,6 @@ Board::Board()
 {
     this->height = 40;
     this->width = 10;
-    this->Floor = (int*) malloc(height* sizeof(int));
-    if(this->Floor == NULL)
-    {
-        printf("\n\n Board Memory Allocation Failed");
-        exit(0);
-    }
     for(int i=0; i < height; i++)
     {
         this->Floor[i] = 0;
@@ -26,15 +20,6 @@ Board::Board(int l, int w)
 {
     this->height = l;
     this->width = w;
-    if(this->height > 0)
-    {
-        this->Floor = (int*) malloc(this->height* sizeof(int));
-    }
-    if(this->Floor == NULL)
-    {
-        printf("\n\n Board Memory Allocation Failed");
-        exit(0);
-    }
     for(int i=0; i < this->height; i++)
     {
         this->Floor[i] = 0;
@@ -44,7 +29,7 @@ Board::Board(int l, int w)
     // Destructors
 Board::~Board()
 {
-    free(this->Floor);
+
 }
 
     // Accessors
@@ -107,14 +92,14 @@ Board::DevelopFloor(int i)
 }
 
     // Action
-void
-Board::SpawnShape(Shape s)
+bool
+Board::SpawnShape(Board Solid, Shape s)
 {
     bool crash = 0;
     int i;
     for(i=0;i<4;i++)
     {
-        if( (s.getLines(i) & this->Floor[i]) != 0 )
+        if( (s.getLines(i) & Solid.getFloor(i)) != 0 )
         {
             crash = 1;
         }
@@ -126,66 +111,112 @@ Board::SpawnShape(Shape s)
             this->Floor[i] = s.getLines(i);
         }
     }
+
+    return crash;
 }
 
 void
-Board::DropShape(Shape s,int i)
+Board::DropShape(int i)
 {
-     int h = s.getHeight();
-     i -= h;
-     for(int j = i + h; j > -1; j--)
-     {
-          if(!(j == i))
-          { this->Floor[j] = this->Floor[j-1]; }
-          else
-          { this->Floor[j] = 0; }
-     }
+      this->Floor[i] = this->Floor[i-1];
+      this->Floor[i-1] = this->Floor[i-2];
+      this->Floor[i-2] = this->Floor[i-3];
+      this->Floor[i-3] = this->Floor[i-4];
+      this->Floor[i-4] = 0;
 }
 
 void
-Board::LandShape(Board Ghost, Shape s, int i)
+Board::LandShape(Board Ghost, int h, int i)
 {
-    int h = s.getHeight();
-    int j=i-h;
+    int j=i-h-2;
 
-    if(i == 2 && h == 1 && this->Floor[1] != 0)
+    if(i == 4 && h == 1 && this->Floor[1] != 0)
     {
         for(j=j;j<i;j++)
         {
             this->Floor[j-1] = this->Floor[j-1] + Ghost.getFloor(j);
         }
     }
+    if(h == 1)
+    {
+        this->Floor[i-4] = this->Floor[i-4] + Ghost.getFloor(i-4);
+    }
     else
     {
-        for(j=j;j<i;j++)
+        for(j=j;j<i+h;j++)
         {
-            this->Floor[j-1] = this->Floor[j] + Ghost.getFloor(j);
+            this->Floor[j] = this->Floor[j] + Ghost.getFloor(j);
         }
     }
 
 }
 
 bool
-Board::DetectCollision(Board Ghost, Shape s, int i)
+Board::DetectCollision(Board Ghost, int h, int i)
 {
     bool crash = 0;
-    int h = s.getHeight();
-    int j=i-h;
-
-    if(i == 40)
-    { crash = 1; }
+    int j=i-4;
+    int laps = j+h;
+    if( i == 44-h)
+    { return crash=1; }
     else
     {
-        for(j=j;j<i;j++)
+        for(j=j;j<laps;j++)
         {
-            if( (Ghost.getFloor(j) & this->Floor[j+1]) != 0 )
-            { crash = 1; }
+            if((Ghost.getFloor(j) & this->Floor[j+1]) != 0)
+            {
+                return crash = 1;
+            }
         }
     }
 
     return crash;
+
 }
 
+void
+Board::MoveLeft()
+{
+    int *tmp;
+    for(int i=0; i< getHeight(); i++)
+    {
+            tmp = DevelopFloor(i);
+            if( (tmp[0] != 0) || (tmp[9] != 0) )
+            {
+                system("cls");
+            }
+            else
+            {
+                if(this->Floor[i] != 0)
+                {
+                    this->Floor[i] = this->Floor[i] << 1;
+                }
+            }
+    }
+
+}
+
+void
+Board::MoveRight()
+{
+    int *tmp;
+    for(int i=0; i< getHeight(); i++)
+    {
+            tmp = DevelopFloor(i);
+            if( (tmp[0] != 0) || (tmp[9] != 0) )
+            {
+                system("cls");
+            }
+            else
+            {
+                if(this->Floor[i] != 0)
+                {
+                    this->Floor[i] = this->Floor[i] >> 1;
+                }
+            }
+    }
+
+}
 
     // Display
 void
@@ -197,7 +228,11 @@ Board::DrawConsoleBoard()
 
     for(int i=0; i< getHeight(); i++)
     {
-        printf("\n                            |");
+        if(i<10)
+        { printf("\n                            %d     |",i); }
+        else
+        { printf("\n                            %d    |",i); }
+
         for(int j=0; j<getWidth();j++)
         {
             tmp = DevelopFloor(i);
@@ -210,15 +245,17 @@ Board::DrawConsoleBoard()
                 printf(" %c", d);
             }
         }
-        printf(" |");
+        printf("  |");
     }
 }
 
 void
-Board::ReInitBoard()
+Board::ReInitBoard(int h, int w)
 {
     for(int i=0 ; i < getHeight();i++)
     {
         setFloor(i,0);
     }
+    this->height = h;
+    this->width = w;
 }

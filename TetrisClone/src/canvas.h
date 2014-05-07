@@ -1,42 +1,52 @@
-#ifndef CANVAS_H
-#define CANVAS_H
+#ifndef Canvas_h
+#define Canvas_h
+
 
 #include "GlWindow.h"
 #include "board.h"
+#include <unistd.h>
+
 
 class Canvas : public GlWindow
 {
-public:
-    Canvas();
+    private:
 
-    /*!
-    *\brief Initialization des objets.
-    */
-    bool initializeObjects();
+        Board Solid;
+        Board Ghost;
+        Shape Current;
 
-    /*!
-    *\brief Rendu de la scène.
-    */
-    void render();
+    public:
 
-    // Accessors
-    Board getBoard();
-    Board getGhost();
+        Canvas();
+        ~Canvas();
 
-    // Drawing
-    void drawBoard();
-    void drawEShape();
 
-    // Key Input Handling
-    void Rotate();
-    void MoveLeft();
-    void MoveRight();
-    void keyPressEvent(QKeyEvent *);
+        /* Access */
+        Board getSolid();
+        Board getGhost();
+        void setSolidFloor(int i, int v);
+        int getSolidFloor(int i);
+        int getShapeHeigth();
 
-private:
-    // Attributes
-    Board board;
-    Board ghost;
+        /* Actions */
+        void GenShape();
+        bool Spawn(Shape s);
+        void Drop(int i);
+        void Fall();
+        void Left();
+        void Right();
+        void Rotate();
+
+        /* Drawing */
+        bool initializeObjects();
+        void render();
+        void drawBoard();
+        void drawGhost();
+        void drawFrame();
+
+        /* Key Handling */
+        void keyPressEvent(QKeyEvent *);
 };
 
-#endif // CANVAS_H
+
+#endif

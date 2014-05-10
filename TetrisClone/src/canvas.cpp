@@ -73,14 +73,18 @@ void
 Canvas::Fall()
 {
     int h = this->Current.getHeight();
-    for(int i=4;i<44;i++)
+    for(int i=4;i<20;i++)
     {
-        if( !getSolid().DetectCollision(getGhost(),h,i) )
-        {
-            Drop(i);
-            system("cls");
-            getGhost().DrawConsoleBoard();
-        }
+//        if(this->Ghost.getFloor(i) != 0)
+//        {
+            if( !getSolid().DetectCollision(getGhost(),h,i) )
+            {
+                Drop(i);
+                system("cls");
+                getGhost().DrawConsoleBoard();
+                render();
+            }
+       // }
     }
 }
 
@@ -88,8 +92,13 @@ void
 Canvas::Left()
 {
     int *tmp;
+
     bool end = 0;
-    for(int i=0; i< this->Current.getHeight(); i++)
+
+    int h = this->Current.getHeight();
+    int k = LocateShapeY();
+
+    for(int i=k; i< k+h; i++)
     {
         tmp = this->Ghost.DevelopFloor(i);
         if( tmp[0] != 0 )
@@ -100,7 +109,7 @@ Canvas::Left()
     }
     if( !end )
     {
-        for(int i=0; i< this->Current.getHeight(); i++)
+        for(int i=k; i< k+h; i++)
         {
             tmp = this->Ghost.DevelopFloor(i);
             if(this->Ghost.getFloor(i) != 0)
@@ -118,7 +127,8 @@ Canvas::Right()
 {
     int *tmp;
     bool end = 0;
-    for(int i=0; i< this->Current.getHeight(); i++)
+    int k = LocateShapeY();
+    for(int i=k; i< k+this->Current.getHeight(); i++)
     {
         tmp = this->Ghost.DevelopFloor(i);
         if( tmp[9] != 0 )
@@ -129,7 +139,7 @@ Canvas::Right()
     }
     if( !end )
     {
-        for(int i=0; i< this->Current.getHeight(); i++)
+        for(int i=k; i<k+ this->Current.getHeight(); i++)
         {
             tmp = this->Ghost.DevelopFloor(i);
             if(this->Ghost.getFloor(i) != 0)
@@ -145,24 +155,36 @@ Canvas::Right()
 void
 Canvas::Rotate()
 {
-    int i = this->Current.getIndex();
+    int rotation = this->Current.getRotation();
+    int index = this->Current.getIndex();
     int tmp;
-    i++;
+    rotation++;
 
-    for(int k=0; k< this->Current.getHeight(); k++)
+    for(int k=0; k<this->Ghost.getHeight();k++)
     {
-        // top line of the shape found
+        // Top line of the shape found
         if(this->Ghost.getFloor(k) != 0)
         {
-            for(int j=0; j<this->Current.getHeight();j++)
+            for(int j=0; j<4;j++)
             {
                 // Replace line with rotated shape line
-                tmp = this->Current.getLineRotation(this->Current.getIndex(),i,j);
-                this->Ghost.setFloor(i,tmp);
+                tmp = this->Current.getLineRotation(rotation,index,j);
+                this->Ghost.setFloor(k+j,tmp);
+
+                // Update Shape Info
+                this->Current.setLines(j,tmp);
+                if(this->Current.getRotation() < 3)
+                { this->Current.setRotation(rotation); }
+                else
+                { this->Current.setRotation(-1); }
+
             }
             break;
         }
     }
+
+    system("cls");
+    getGhost().DrawConsoleBoard();
 }
 
 int
@@ -175,9 +197,38 @@ void
 Canvas::GenShape()
 {
     this->Current.GetShape();
-    this->Current.setIndex(0);
 }
 
+    /* Calculation */
+
+int
+Canvas::LocateShapeX()
+{
+    int x = 0;
+    int y = LocateShapeY();
+    int h = this->Current.getHeight();
+    for(int i=y; i < y + h; i++)
+    {
+        if(this->Ghost.getFloor(i) > x)
+        { x = this->Ghost.getFloor(i); }
+    }
+
+    return x;
+}
+
+int
+Canvas::LocateShapeY()
+{
+    for(int i=0;i < this->Ghost.getHeight();i++)
+    {
+        if(this->Ghost.getFloor(i) != 0)
+        {
+            return i;
+            break;
+        }
+    }
+
+}
     /* Drawing */
 bool
 Canvas::initializeObjects()
@@ -206,7 +257,6 @@ Canvas::initializeObjects()
     GenShape();
     bool b;
     b=Spawn(Current);
-//    getGhost().DrawConsoleBoard();
 
 
 

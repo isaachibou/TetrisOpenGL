@@ -8,6 +8,7 @@ using namespace std;
 Shape::Shape()
 {
     this->index = 0;
+    this->rotation = 0;
 
     for(int i=0;i<4;i++)
     {
@@ -27,6 +28,11 @@ Shape::getLines(int i)
     return this->Lines[i];
 }
 
+void
+Shape::setLines(int i, int value)
+{
+    this->Lines[i] = value;
+}
     // Calculation
 int*
 Shape::DevelopFloor(int i)
@@ -83,6 +89,18 @@ void
 Shape::setIndex(int value)
 {
     this->index = value;
+}
+
+int
+Shape::getRotation()
+{
+    return this->rotation;
+}
+
+void
+Shape::setRotation(int value)
+{
+    this->rotation = value;
 }
 
 int

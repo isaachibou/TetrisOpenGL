@@ -37,6 +37,10 @@ class Canvas : public GlWindow
         void Right();
         void Rotate();
 
+        /* Calculation */
+        int LocateShapeX();
+        int LocateShapeY();
+
         /* Drawing */
         bool initializeObjects();
         void render();

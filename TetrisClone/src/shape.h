@@ -18,13 +18,17 @@ public:
 
     // Accessors
     int getLines(int i);
+    void setLines(int i, int value);
 
     // Calculation
     int* DevelopFloor(int i);
     int getHeight();
     int getIndex();
     void setIndex(int value);
+    int getRotation();
+    void setRotation(int value);
     int getLineRotation(int rotation, int index,int k);
+
 
     // Display
     void drawShape();
@@ -37,6 +41,7 @@ public:
 private:
     // Attributes
     int Lines[4];
+    int rotation;
     int index;
     int Collection[7][4][4]=
     {
@@ -49,7 +54,7 @@ private:
         {   // J
             {64,112,0,0},
             {96,64,64,0},
-            {112,32,0,0},
+            {112,16,0,0},
             {48,16,16,0}
         },
         {   // S

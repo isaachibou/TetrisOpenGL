@@ -25,7 +25,6 @@ int main(int argc, char *argv[])
 
     Canvas win;
     win.show();
-//    win.Fall();
 
     return app.exec();
 }

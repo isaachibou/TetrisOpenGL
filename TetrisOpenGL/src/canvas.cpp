@@ -22,7 +22,9 @@ Canvas::Canvas()
 
     g_Basis = new Basis( 10.0 );
 
-//    this->Solid.setFloor(32,120);
+    this->Solid.setFloor(0,512+256+1+2);
+    this->Solid.setFloor(2,64+32+16+8);
+
 
 
 }
@@ -101,78 +103,106 @@ void
 Canvas::Left()
 {
     int *tmp;
+    int tmp_array[4] = {0};
 
-    bool end = 0;
+    bool crash = 0;
 
+    int i=0;
     int h = this->Current.getHeight();
     int k = LocateShapeY();
     int o = this->Current.getOffSet();
-    o--;
-    this->Current.setOffSet(o);
 
-    for(int i=k; i< k+h; i++)
+    for(i=k; i<k+h; i++)
     {
         tmp = this->Ghost.DevelopFloor(i);
+        /* Check if the Shape is not already against the Left border */
         if( tmp[0] != 0 )
         {
-            system("cls");
-            end = 1;
+            crash = 1;
+            break;
         }
-    }
-    if( !end )
-    {
-        for(int i=k; i< k+h; i++)
+
+        /* If no Collision are predicted for this line save its value and Left Offset it */
+        tmp_array[i] = this->Ghost.getFloor(i);
+        if(this->Ghost.getFloor(i) != 0) { tmp_array[i] = tmp_array[i] << 1; }
+
+        /* Check if Solid current content will collide after Left Offset */
+        if( (this->Solid.getFloor(i) & tmp_array[i]) != 0 )
         {
-            tmp = this->Ghost.DevelopFloor(i);
-            if(this->Ghost.getFloor(i) != 0)
-            {
-                this->Ghost.setFloor(i,this->Ghost.getFloor(i) << 1);
-            }
+            crash = 1;
+            break;
         }
     }
-        system("cls");
-        getGhost().DrawConsoleBoard();
+
+    if( !crash )
+    {
+        /* No Collision predicted movement is allowed */
+        for(i=k; i<k+h; i++)
+        {
+            this->Ghost.setFloor(i,tmp_array[i]);
+        }
+
+        /* Update Shape Info */
+        o--;
+        this->Current.setOffSet(o);
+    }
+
 }
 
 void
 Canvas::Right()
 {
     int *tmp;
-    bool end = 0;
+    int tmp_array[4] = {0};
+
+    bool crash = 0;
+
+    int i=0;
+    int h = this->Current.getHeight();
     int k = LocateShapeY();
     int o = this->Current.getOffSet();
 
-    o++;
-    this->Current.setOffSet(o);
-
-    for(int i=k; i< k+this->Current.getHeight(); i++)
+    for(i=k; i<k+h; i++)
     {
         tmp = this->Ghost.DevelopFloor(i);
+        /* Check if the Shape is not already against the Left border */
         if( tmp[9] != 0 )
         {
-            system("cls");
-            end = 1;
+            crash = 1;
+            break;
         }
-    }
-    if( !end )
-    {
-        for(int i=k; i<k+ this->Current.getHeight(); i++)
+
+        /* If no Collision are predicted for this line save its value and Left Offset it */
+        tmp_array[i] = this->Ghost.getFloor(i);
+        if(this->Ghost.getFloor(i) != 0) { tmp_array[i] = tmp_array[i] >> 1; }
+
+        /* Check if Solid current content will collide after Left Offset */
+        if( (this->Solid.getFloor(i) & tmp_array[i]) != 0 )
         {
-            tmp = this->Ghost.DevelopFloor(i);
-            if(this->Ghost.getFloor(i) != 0)
-            {
-                this->Ghost.setFloor(i,this->Ghost.getFloor(i) >> 1);
-            }
+            crash = 1;
+            break;
         }
     }
-        system("cls");
-        getGhost().DrawConsoleBoard();
+
+    if( !crash )
+    {
+        /* No Collision predicted movement is allowed */
+        for(i=k; i<k+h; i++)
+        {
+            this->Ghost.setFloor(i,tmp_array[i]);
+        }
+
+        /* Update Shape Info */
+        o++;
+        this->Current.setOffSet(o);
+    }
+
 }
 
 void
 Canvas::Rotate()
 {
-    int save[4] = {0};
+    int tmp_array[4] = {0};
     int rotation = this->Current.getRotation();
     int index = this->Current.getIndex();
     int offset = this->Current.getOffSet();
@@ -180,71 +210,39 @@ Canvas::Rotate()
 
     rotation++;
 
-//    for(j=0;j<4;j++)
-//    {
-//        save[j] = this->Ghost.getFloor(j);
-//    }
-
     for(int k=0; k<this->Ghost.getHeight();k++)
     {
-        // Top line of the shape found
+        /* Top line of the Shape found */
         if(this->Ghost.getFloor(k) != 0)
         {
-            for(j=0; j<4;j++)
+
+            for(j=0;j<4;j++)
             {
-                // Replace line with rotated shape line
                 tmp = this->Current.getLineRotation(rotation,index,j);
 
-
-                // Offset Line on Left or Right following the position of the Shape prior to the rotation
+                /* Offset Line on Left or Right following the position of the Shape prior to the rotation */
                 if(offset >= 0)
                 {
-                    for(o = 0; o< offset; o++)
+                    for(o=0; o<offset; o++)
                     {
                         tmp = tmp >> 1;
-//                        if(tmp < 1)
-//                        {
-//                            for(j=0;j<4;j++)
-//                            {
-//                                this->Ghost.setFloor(j,save[j]);
-//                            }
-//                            break;
-//                        }
                     }
-                    this->Ghost.setFloor(k+j,tmp);
                 }
                 else
                 {
-                    for(o = 0; o > offset; o--)
+                    for(o=0; o > offset; o--)
                     {
-                         tmp = tmp << 1;
-//                         if(tmp > 512)
-//                         {
-//                             for(j=0;j<4;j++)
-//                             {
-//                                 this->Ghost.setFloor(j,save[j]);
-//                             }
-//                             break;
-//                         }
+                        tmp = tmp << 1;
                     }
-                    this->Ghost.setFloor(k+j,tmp);
                 }
 
-                // Update Shape Info
-                this->Current.setLines(j,tmp);
-
-                if(this->Current.getRotation() < 3) { this->Current.setRotation(rotation); }
-                else { this->Current.setRotation(-1); }
-
+                /* Store the rotated Shape Lines */
+               tmp_array[j] = tmp;
             }
             break;
         }
-
-
     }
 
-    system("cls");
-    getGhost().DrawConsoleBoard();
 }
 
 bool
@@ -424,7 +422,7 @@ Canvas::drawGhost()
                     glVertex3f(j+1,h-i,0.0f);
                     glVertex3f(j+1,h-i-1,0.0f);
                 glEnd();
-                glColor3f(0.0f, 0.0f, 1.0f);
+                glColor3f(1.0f, 0.0f, 0.0f);
                 glRecti(j,h-i-1,j+1,h-i);
             }
         }

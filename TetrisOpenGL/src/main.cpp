@@ -29,33 +29,31 @@ int main(int argc, char *argv[])
 
 
 
-//    while(win.getSolid().getFloor(0) == 0)
-//    {
-//        /** Spawn the Shape **/
-//        win.GenShape();
+    while(win.getSolid().getFloor(0) == 0)
+    {
+        /** Spawn the Shape **/
+        win.GenShape();
 
-//        for(int i=4;i<43;i++)
-//        {
-//             /** Drop the Shape **/
-//            if( !win.Detect(i) )
-//            {
-//                usleep(100000);
-//                win.Drop(i);
-//                app.processEvents();
-//                system("cls");
-//                win.getGhost().DrawConsoleBoard();
-//            }
-//            else
-//            {
-//                win.Land(i);
-//                win.Clear("Ghost");
-//                break;
-//            }
-//        }
-//     }
+        for(int i=4;i<43;i++)
+        {
+             /** Drop the Shape **/
+            if( !win.Detect(i) )
+            {
+                usleep(100000);
+                win.Drop(i);
+                app.processEvents();
+                system("cls");
+                win.getGhost().DrawConsoleBoard();
+            }
+            else
+            {
+                win.Land(i);
+                win.Clear("Ghost");
+                break;
+            }
+        }
+     }
 
-    /** Spawn the Shape **/
-    win.GenShape();
 
 
 

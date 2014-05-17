@@ -22,8 +22,8 @@ Canvas::Canvas()
 
     g_Basis = new Basis( 10.0 );
 
-    this->Solid.setFloor(0,512+256+1+2);
-    this->Solid.setFloor(2,64+32+16+8);
+//    this->Solid.setFloor(0,512+256+1+2);
+//    this->Solid.setFloor(2,64+32+16+8);
 
 
 
@@ -203,12 +203,15 @@ void
 Canvas::Rotate()
 {
     int tmp_array[4] = {0};
+
     int rotation = this->Current.getRotation();
     int index = this->Current.getIndex();
     int offset = this->Current.getOffSet();
     int tmp,o,j;
 
     rotation++;
+
+    bool crash = 0;
 
     for(int k=0; k<this->Ghost.getHeight();k++)
     {
@@ -225,21 +228,51 @@ Canvas::Rotate()
                 {
                     for(o=0; o<offset; o++)
                     {
-                        tmp = tmp >> 1;
+                        if(tmp != 1) { tmp = tmp >> 1; }
+                        else { crash = 1; break; }
                     }
                 }
                 else
                 {
                     for(o=0; o > offset; o--)
                     {
-                        tmp = tmp << 1;
+                        if(tmp != 512) { tmp = tmp << 1; }
+                        else { crash = 1; break; }
                     }
                 }
 
                 /* Store the rotated Shape Lines */
                tmp_array[j] = tmp;
+               if( (this->Solid.getFloor(k+j) & tmp_array[j]) != 0)
+               {
+                   crash = 1;
+                   break;
+               }
             }
             break;
+        }
+    }
+
+    if( !crash)
+    {
+        for(int k=0; k<this->Ghost.getHeight();k++)
+        {
+            /* Top line of the Shape found */
+            if(this->Ghost.getFloor(k) != 0)
+            {
+                for(j=0;j<4;j++)
+                {
+                    /* Fill Ghost with Rotated Shape */
+                   this->Ghost.setFloor(k+j, tmp_array[j]);
+
+                    /* Update Shape Info */
+                    this->Current.setLines(j,tmp_array[j]);
+
+                    if(this->Current.getRotation() < 3) { this->Current.setRotation(rotation); }
+                    else { this->Current.setRotation(-1); }
+                }
+                break;
+            }
         }
     }
 
@@ -453,8 +486,6 @@ Canvas::keyPressEvent( QKeyEvent* event )
             break;
 
         case Qt::Key_Down:
-            Clear("Ghost");
-            GenShape();
             break;
 
         case Qt::Key_U:

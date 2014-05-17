@@ -1,4 +1,5 @@
 #include <QApplication>
+#include <QCoreApplication>
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -25,6 +26,38 @@ int main(int argc, char *argv[])
 
     Canvas win;
     win.show();
+
+
+
+//    while(win.getSolid().getFloor(0) == 0)
+//    {
+//        /** Spawn the Shape **/
+//        win.GenShape();
+
+//        for(int i=4;i<43;i++)
+//        {
+//             /** Drop the Shape **/
+//            if( !win.Detect(i) )
+//            {
+//                usleep(100000);
+//                win.Drop(i);
+//                app.processEvents();
+//                system("cls");
+//                win.getGhost().DrawConsoleBoard();
+//            }
+//            else
+//            {
+//                win.Land(i);
+//                win.Clear("Ghost");
+//                break;
+//            }
+//        }
+//     }
+
+    /** Spawn the Shape **/
+    win.GenShape();
+
+
 
     return app.exec();
 }

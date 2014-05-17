@@ -19,6 +19,8 @@ public:
     // Accessors
     int getLines(int i);
     void setLines(int i, int value);
+    int getOffSet();
+    void setOffSet( int value);
 
     // Calculation
     int* DevelopFloor(int i);
@@ -43,19 +45,20 @@ private:
     int Lines[4];
     int rotation;
     int index;
+    int OffSet;
     int Collection[7][4][4]=
     {
         {   // I
-            {120,0,0,0},
+            {0,120,0,0},
             {16,16,16,16},
             {0,0,120,0},
             {32,32,32,32}
         },
         {   // J
             {64,112,0,0},
-            {96,64,64,0},
+            {48,32,32,0},
             {112,16,0,0},
-            {48,16,16,0}
+            {32,32,96,0}
         },
         {   // S
             {48,96,0,0},

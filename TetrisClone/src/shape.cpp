@@ -9,6 +9,7 @@ Shape::Shape()
 {
     this->index = 0;
     this->rotation = 0;
+    this->OffSet = 0;
 
     for(int i=0;i<4;i++)
     {
@@ -33,6 +34,19 @@ Shape::setLines(int i, int value)
 {
     this->Lines[i] = value;
 }
+
+int
+Shape::getOffSet()
+{
+    return this->OffSet;
+}
+
+void
+Shape::setOffSet( int value)
+{
+    this->OffSet = value;
+}
+
     // Calculation
 int*
 Shape::DevelopFloor(int i)

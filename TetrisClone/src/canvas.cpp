@@ -1,6 +1,5 @@
 #include "Canvas.h"
 
-
 #include "Shapes/Basis.h"
 
 #include <iostream>
@@ -23,6 +22,9 @@ Canvas::Canvas()
 
     g_Basis = new Basis( 10.0 );
 
+//    this->Solid.setFloor(32,120);
+
+
 }
 
 
@@ -42,6 +44,12 @@ Board
 Canvas::getGhost()
 {
     return this->Ghost;
+}
+
+Shape
+Canvas::getCurrent()
+{
+    return this->Current;
 }
 
 void
@@ -73,18 +81,19 @@ void
 Canvas::Fall()
 {
     int h = this->Current.getHeight();
-    for(int i=4;i<20;i++)
+    for(int i=4;i<43;i++)
     {
 //        if(this->Ghost.getFloor(i) != 0)
 //        {
             if( !getSolid().DetectCollision(getGhost(),h,i) )
             {
+                usleep(10000);
                 Drop(i);
                 system("cls");
                 getGhost().DrawConsoleBoard();
-                render();
+
             }
-       // }
+//        }
     }
 }
 
@@ -97,6 +106,9 @@ Canvas::Left()
 
     int h = this->Current.getHeight();
     int k = LocateShapeY();
+    int o = this->Current.getOffSet();
+    o--;
+    this->Current.setOffSet(o);
 
     for(int i=k; i< k+h; i++)
     {
@@ -128,6 +140,11 @@ Canvas::Right()
     int *tmp;
     bool end = 0;
     int k = LocateShapeY();
+    int o = this->Current.getOffSet();
+
+    o++;
+    this->Current.setOffSet(o);
+
     for(int i=k; i< k+this->Current.getHeight(); i++)
     {
         tmp = this->Ghost.DevelopFloor(i);
@@ -155,36 +172,93 @@ Canvas::Right()
 void
 Canvas::Rotate()
 {
+    int save[4] = {0};
     int rotation = this->Current.getRotation();
     int index = this->Current.getIndex();
-    int tmp;
+    int offset = this->Current.getOffSet();
+    int tmp,o,j;
+
     rotation++;
+
+//    for(j=0;j<4;j++)
+//    {
+//        save[j] = this->Ghost.getFloor(j);
+//    }
 
     for(int k=0; k<this->Ghost.getHeight();k++)
     {
         // Top line of the shape found
         if(this->Ghost.getFloor(k) != 0)
         {
-            for(int j=0; j<4;j++)
+            for(j=0; j<4;j++)
             {
                 // Replace line with rotated shape line
                 tmp = this->Current.getLineRotation(rotation,index,j);
-                this->Ghost.setFloor(k+j,tmp);
+
+
+                // Offset Line on Left or Right following the position of the Shape prior to the rotation
+                if(offset >= 0)
+                {
+                    for(o = 0; o< offset; o++)
+                    {
+                        tmp = tmp >> 1;
+//                        if(tmp < 1)
+//                        {
+//                            for(j=0;j<4;j++)
+//                            {
+//                                this->Ghost.setFloor(j,save[j]);
+//                            }
+//                            break;
+//                        }
+                    }
+                    this->Ghost.setFloor(k+j,tmp);
+                }
+                else
+                {
+                    for(o = 0; o > offset; o--)
+                    {
+                         tmp = tmp << 1;
+//                         if(tmp > 512)
+//                         {
+//                             for(j=0;j<4;j++)
+//                             {
+//                                 this->Ghost.setFloor(j,save[j]);
+//                             }
+//                             break;
+//                         }
+                    }
+                    this->Ghost.setFloor(k+j,tmp);
+                }
 
                 // Update Shape Info
                 this->Current.setLines(j,tmp);
-                if(this->Current.getRotation() < 3)
-                { this->Current.setRotation(rotation); }
-                else
-                { this->Current.setRotation(-1); }
+
+                if(this->Current.getRotation() < 3) { this->Current.setRotation(rotation); }
+                else { this->Current.setRotation(-1); }
 
             }
             break;
         }
+
+
     }
 
     system("cls");
     getGhost().DrawConsoleBoard();
+}
+
+bool
+Canvas::Detect(int i)
+{
+    int h = this->Ghost.getShapeH();
+    return this->Solid.DetectCollision(this->Ghost,h,i);
+}
+
+void
+Canvas::Land(int i)
+{
+    int h = this->Ghost.getShapeH();
+    this->Solid.LandShape(this->Ghost,h,i);
 }
 
 int
@@ -197,24 +271,19 @@ void
 Canvas::GenShape()
 {
     this->Current.GetShape();
+    bool b;
+    b=Spawn(Current);
+}
+
+void
+Canvas::Clear(string Board)
+{
+    if(Board == "Ghost") { this->Ghost.ReInitBoard(40,10); }
+    if(Board == "Solid") { this->Solid.ReInitBoard(40,10); }
 }
 
     /* Calculation */
 
-int
-Canvas::LocateShapeX()
-{
-    int x = 0;
-    int y = LocateShapeY();
-    int h = this->Current.getHeight();
-    for(int i=y; i < y + h; i++)
-    {
-        if(this->Ghost.getFloor(i) > x)
-        { x = this->Ghost.getFloor(i); }
-    }
-
-    return x;
-}
 
 int
 Canvas::LocateShapeY()
@@ -230,7 +299,24 @@ Canvas::LocateShapeY()
 
 }
     /* Drawing */
-bool
+
+void
+Canvas::timerEvent(QTimerEvent *)
+{
+    update();
+}
+
+void
+Canvas::paintGL()
+{
+    // Nettoyage du Color Buffer et du Depth Buffer
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+    render();
+
+}
+
+ bool
 Canvas::initializeObjects()
 {
     // Fond gris
@@ -253,10 +339,9 @@ Canvas::initializeObjects()
     glScalef(0.04f, 0.04f, 0.1f);
     glTranslatef(-22,-22,0);
 
-    /** Spawn the Shape **/
-    GenShape();
-    bool b;
-    b=Spawn(Current);
+    //    /** Spawn the Shape **/
+    //    GenShape();
+
 
 
 
@@ -276,6 +361,7 @@ Canvas::render()
     pushMatrix();
         drawGhost();
     popMatrix();
+
 
 }
 
@@ -369,11 +455,18 @@ Canvas::keyPressEvent( QKeyEvent* event )
             break;
 
         case Qt::Key_Down:
-            Drop(4);
+            Clear("Ghost");
+            GenShape();
             break;
 
-        case Qt::Key_R:
-            angle1 = angle2 = 0.0f;
-            break;
+        case Qt::Key_U:
+            update();
+        break;
+
+        case Qt::Key_E:
+            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);	// Clean the screen and the depth buffer
+            glLoadIdentity();
+        break;
+
     }
 }

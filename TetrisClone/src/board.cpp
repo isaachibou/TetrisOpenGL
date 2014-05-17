@@ -60,6 +60,21 @@ Board::getWidth()
     return this->width;
 }
 
+int
+Board::getShapeH()
+{
+    int h=0;
+
+    for(int i=0;i<40;i++)
+    {
+        if(this->Floor[i] != 0)
+        { h++; }
+
+    }
+
+    return h;
+}
+
     // Calculation
 int*
 Board::DevelopFloor(int i)
@@ -128,7 +143,8 @@ Board::DropShape(int i)
 void
 Board::LandShape(Board Ghost, int h, int i)
 {
-    int j=i-h-2;
+    int j=i-4;
+    int end = j +h;
 
     if(i == 4 && h == 1 && this->Floor[1] != 0)
     {
@@ -143,7 +159,7 @@ Board::LandShape(Board Ghost, int h, int i)
     }
     else
     {
-        for(j=j;j<i+h;j++)
+        for(j=j;j<end;j++)
         {
             this->Floor[j] = this->Floor[j] + Ghost.getFloor(j);
         }
@@ -157,6 +173,7 @@ Board::DetectCollision(Board Ghost, int h, int i)
     bool crash = 0;
     int j=i-4;
     int laps = j+h;
+    if(laps > 40) { laps = 40; }
     if( i == 44-h)
     { return crash=1; }
     else

@@ -6,6 +6,8 @@
 #include "board.h"
 #include <unistd.h>
 
+using namespace std;
+
 
 class Canvas : public GlWindow
 {
@@ -24,6 +26,7 @@ class Canvas : public GlWindow
         /* Access */
         Board getSolid();
         Board getGhost();
+        Shape getCurrent();
         void setSolidFloor(int i, int v);
         int getSolidFloor(int i);
         int getShapeHeigth();
@@ -36,12 +39,17 @@ class Canvas : public GlWindow
         void Left();
         void Right();
         void Rotate();
+        bool Detect(int i);
+        void Land(int i);
+        void Clear(string Board);
 
         /* Calculation */
         int LocateShapeX();
         int LocateShapeY();
 
         /* Drawing */
+        void timerEvent(QTimerEvent *);
+        void paintGL();
         bool initializeObjects();
         void render();
         void drawBoard();

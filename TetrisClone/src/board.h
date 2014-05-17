@@ -23,6 +23,7 @@ public:
     void setFloor(int i, int value);
     int getHeight();
     int getWidth();
+    int getShapeH();
 
     // Calculation
     int* DevelopFloor(int i);

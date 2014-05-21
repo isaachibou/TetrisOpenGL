@@ -22,11 +22,6 @@ Canvas::Canvas()
 
     g_Basis = new Basis( 10.0 );
 
-//    this->Solid.setFloor(0,512+256+1+2);
-//    this->Solid.setFloor(2,64+32+16+8);
-
-
-
 }
 
 
@@ -54,6 +49,18 @@ Canvas::getCurrent()
     return this->Current;
 }
 
+Shape
+Canvas::getStock()
+{
+    return this->Stock;
+}
+
+Game
+Canvas::getGame()
+{
+    return this->Tetris;
+}
+
 void
 Canvas::setSolidFloor(int i, int v)
 {
@@ -63,7 +70,7 @@ Canvas::setSolidFloor(int i, int v)
 int
 Canvas::getSolidFloor(int i)
 {
-    this->Solid.getFloor(i);
+    return this->Solid.getFloor(i);
 }
 
     /* Actions */
@@ -89,7 +96,7 @@ Canvas::Fall()
 //        {
             if( !getSolid().DetectCollision(getGhost(),h,i) )
             {
-                usleep(10000);
+                usleep(100000);
                 Drop(i);
                 system("cls");
                 getGhost().DrawConsoleBoard();
@@ -107,7 +114,7 @@ Canvas::Left()
 
     bool crash = 0;
 
-    int i=0;
+    int i=0,j=0;
     int h = this->Current.getHeight();
     int k = LocateShapeY();
     int o = this->Current.getOffSet();
@@ -123,23 +130,26 @@ Canvas::Left()
         }
 
         /* If no Collision are predicted for this line save its value and Left Offset it */
-        tmp_array[i] = this->Ghost.getFloor(i);
-        if(this->Ghost.getFloor(i) != 0) { tmp_array[i] = tmp_array[i] << 1; }
+        tmp_array[j] = this->Ghost.getFloor(i);
+        if(this->Ghost.getFloor(i) != 0) { tmp_array[j] = tmp_array[j] << 1; }
 
         /* Check if Solid current content will collide after Left Offset */
-        if( (this->Solid.getFloor(i) & tmp_array[i]) != 0 )
+        if( (this->Solid.getFloor(i) & tmp_array[j]) != 0 )
         {
             crash = 1;
             break;
         }
+        j++;
     }
 
     if( !crash )
     {
+        j=0;
         /* No Collision predicted movement is allowed */
         for(i=k; i<k+h; i++)
         {
-            this->Ghost.setFloor(i,tmp_array[i]);
+            this->Ghost.setFloor(i,tmp_array[j]);
+            j++;
         }
 
         /* Update Shape Info */
@@ -157,7 +167,7 @@ Canvas::Right()
 
     bool crash = 0;
 
-    int i=0;
+    int i=0,j=0;
     int h = this->Current.getHeight();
     int k = LocateShapeY();
     int o = this->Current.getOffSet();
@@ -173,23 +183,26 @@ Canvas::Right()
         }
 
         /* If no Collision are predicted for this line save its value and Left Offset it */
-        tmp_array[i] = this->Ghost.getFloor(i);
-        if(this->Ghost.getFloor(i) != 0) { tmp_array[i] = tmp_array[i] >> 1; }
+        tmp_array[j] = this->Ghost.getFloor(i);
+        if(this->Ghost.getFloor(i) != 0) { tmp_array[j] = tmp_array[j] >> 1; }
 
         /* Check if Solid current content will collide after Left Offset */
-        if( (this->Solid.getFloor(i) & tmp_array[i]) != 0 )
+        if( (this->Solid.getFloor(i) & tmp_array[j]) != 0 )
         {
             crash = 1;
             break;
         }
+        j++;
     }
 
     if( !crash )
     {
+        j=0;
         /* No Collision predicted movement is allowed */
         for(i=k; i<k+h; i++)
         {
-            this->Ghost.setFloor(i,tmp_array[i]);
+            this->Ghost.setFloor(i,tmp_array[j]);
+            j++;
         }
 
         /* Update Shape Info */
@@ -213,6 +226,7 @@ Canvas::Rotate()
 
     bool crash = 0;
 
+    if(this->Ghost.getShapeH()==1) { j=j;}
     for(int k=0; k<this->Ghost.getHeight();k++)
     {
         /* Top line of the Shape found */
@@ -290,6 +304,22 @@ Canvas::Land(int i)
 {
     int h = this->Ghost.getShapeH();
     this->Solid.LandShape(this->Ghost,h,i);
+
+    int j=i-4;
+    int end = j +h;
+    int* tmp;
+
+    for(j=j;j<end;j++)
+    {
+       tmp = this->Ghost.DevelopFloor(j);
+       for(int k=0;k<10;k++)
+       {
+           if(tmp[k] == 1)
+           {
+               this->Colors[j][k] = this->Current.getIndex();
+           }
+       }
+    }
 }
 
 int
@@ -302,8 +332,16 @@ void
 Canvas::GenShape()
 {
     this->Current.GetShape();
+    this->Current.setOffSet(0);
     bool b;
     b=Spawn(Current);
+}
+
+void
+Canvas::GenStock()
+{
+    this->Stock.GetShape();
+    this->Stock.setOffSet(0);
 }
 
 void
@@ -311,6 +349,15 @@ Canvas::Clear(string Board)
 {
     if(Board == "Ghost") { this->Ghost.ReInitBoard(40,10); }
     if(Board == "Solid") { this->Solid.ReInitBoard(40,10); }
+}
+
+bool
+Canvas::CleanFullLine()
+{
+    int score = this->Tetris.getScore();
+    score += this->Solid.ClearFullLines();
+    this->Tetris.setScore(score);
+    return true;
 }
 
     /* Calculation */
@@ -392,6 +439,12 @@ Canvas::render()
     pushMatrix();
         drawGhost();
     popMatrix();
+    pushMatrix();
+        drawStock();
+    popMatrix();
+    pushMatrix();
+        drawText();
+    popMatrix();
 
 
 }
@@ -399,6 +452,9 @@ Canvas::render()
 void
 Canvas::drawFrame()
 {
+    glDisable(GL_LIGHTING);
+    glDisable(GL_DEPTH_TEST);
+
     glBegin(GL_LINE_STRIP);
         glColor3f(0.0f, 1.0f, 0.0f);
         glVertex3f(0.0f, 40.0f, 0.0f);
@@ -406,14 +462,31 @@ Canvas::drawFrame()
         glVertex3f(10.0f, 0.0f, 0.0f);
         glVertex3f(10.0f, 40.0f, 0.0f);
     glEnd();
+
+    glColor3f(0.0f, 0.0f, 0.0f);
+    glRecti(12.0f, 34.0f, 20.0f, 39.0f);
+
+    glColor3f(0.0f, 0.0f, 0.0f);
+    glRecti(12.0f, 28.0f, 20.0f, 33.0f);
+
+    glColor3f(0.0f, 0.0f, 0.0f);
+    glRecti(15.0f, 23.0f, 20.0f, 27.0f);
+
+    glEnable(GL_DEPTH_TEST);
+    glEnable(GL_LIGHTING);
 }
 
 void
 Canvas::drawBoard()
 {
+    glDisable(GL_LIGHTING);
+    glDisable(GL_DEPTH_TEST);
+
     int h=getSolid().getHeight();
     int w=getSolid().getWidth();
     int* tmp;
+    int red,green,blue;
+
     for(int i=0; i < h; i++)
     {
         tmp = getSolid().DevelopFloor(i);
@@ -421,23 +494,60 @@ Canvas::drawBoard()
         {
             if(tmp[j] == 1)
             {
-                glBegin(GL_LINE_LOOP);
-                    glColor3f(1.0f, 1.0f, 1.0f);
-                    glVertex3f(j,h-i-1,0.0f);
-                    glVertex3f(j,h-i,0.0f);
-                    glVertex3f(j+1,h-i,0.0f);
-                    glVertex3f(j+1,h-i-1,0.0f);
-                glEnd();
-                glColor3f(0.0f, 0.0f, 1.0f);
+//                glBegin(GL_LINE_LOOP);
+//                    glColor3f(1.0f, 1.0f, 1.0f);
+//                    glVertex3f(j,h-i-1,0.0f);
+//                    glVertex3f(j,h-i,0.0f);
+//                    glVertex3f(j+1,h-i,0.0f);
+//                    glVertex3f(j+1,h-i-1,0.0f);
+//                glEnd();
+
+                switch(this->Colors[i][j])
+                {
+                    case 0:
+                        red = 0; green = 0; blue = 1;
+                        break;
+
+                    case 1:
+                        red = 0; green = 1; blue = 1;
+                        break;
+
+                    case 2:
+                        red = 1; green = 0; blue = 1;
+                        break;
+
+                    case 3:
+                        red = 1; green = 0; blue = 0;
+                        break;
+
+                    case 4:
+                        red = 0; green = 1; blue = 0;
+                        break;
+
+                    case 5:
+                        red = 1; green = 1; blue = 0;
+                        break;
+
+                    case 6:
+                        red = 1; green = 1; blue = 1;
+                        break;
+                }
+                glColor3f(red,green,blue);
                 glRecti(j,h-i-1,j+1,h-i);
             }
         }
     }
+
+    glEnable(GL_DEPTH_TEST);
+    glEnable(GL_LIGHTING);
 }
 
 void
 Canvas::drawGhost()
 {
+    glDisable(GL_LIGHTING);
+    glDisable(GL_DEPTH_TEST);
+
     int h=getSolid().getHeight();
     int w=getSolid().getWidth();
     int* tmp;
@@ -448,21 +558,69 @@ Canvas::drawGhost()
         {
             if(tmp[j] == 1)
             {
-                glBegin(GL_LINE_LOOP);
-                    glColor3f(1.0f, 1.0f, 1.0f);
-                    glVertex3f(j,h-i-1,0.0f);
-                    glVertex3f(j,h-i,0.0f);
-                    glVertex3f(j+1,h-i,0.0f);
-                    glVertex3f(j+1,h-i-1,0.0f);
-                glEnd();
-                glColor3f(1.0f, 0.0f, 0.0f);
+//                glBegin(GL_LINE_LOOP);
+//                    glColor3f(1.0f, 1.0f, 1.0f);
+//                    glVertex3f(j,h-i-1,0.0f);
+//                    glVertex3f(j,h-i,0.0f);
+//                    glVertex3f(j+1,h-i,0.0f);
+//                    glVertex3f(j+1,h-i-1,0.0f);
+//                glEnd();
+                glColor3f(this->Current.getRed(),this->Current.getGreen(),this->Current.getBlue());
+//                glColor3f(1.0f, 0.0f, 0.0f);
                 glRecti(j,h-i-1,j+1,h-i);
             }
         }
     }
+
+    glEnable(GL_DEPTH_TEST);
+    glEnable(GL_LIGHTING);
 }
 
+void
+Canvas::drawStock()
+{
+    glDisable(GL_LIGHTING);
+    glDisable(GL_DEPTH_TEST);
 
+    int* tmp;
+    int h = getStock().getHeight();
+    for(int i=0; i<4; i++)
+    {
+        tmp = getStock().DevelopFloor(i);
+        for(int j=0; j<10; j++)
+        {
+            if(tmp[j] == 1)
+            {
+                glColor3f(0.0f, 1.0f, 0.0f);
+                glRecti(j+13,h-i-1+24,j+14,h-i+24);
+            }
+        }
+    }
+
+    glEnable(GL_DEPTH_TEST);
+    glEnable(GL_LIGHTING);
+}
+
+void
+Canvas::drawText()
+{
+    glDisable(GL_LIGHTING);
+    glDisable(GL_DEPTH_TEST);
+
+    qglColor(Qt::white);
+    QString level = QString("LEVEL");
+    QString levelN = QString::number(this->Tetris.getLevel());
+    QString lines = QString("LINES");
+    QString linesN = QString::number(this->Tetris.getScore());
+
+    renderText(14, 37, 0, level, QFont("Arial", 12, QFont::Bold, false) );
+    renderText(17, 35, 0, levelN, QFont("Arial", 12, QFont::Bold, false) );
+    renderText(14, 31, 0, lines, QFont("Arial", 12, QFont::Bold, false) );
+    renderText(17, 29, 0, linesN, QFont("Arial", 12, QFont::Bold, false) );
+
+    glEnable(GL_DEPTH_TEST);
+    glEnable(GL_LIGHTING);
+}
     /* Key Handling */
 void
 Canvas::keyPressEvent( QKeyEvent* event )
@@ -486,6 +644,7 @@ Canvas::keyPressEvent( QKeyEvent* event )
             break;
 
         case Qt::Key_Down:
+            Clear("Solid");
             break;
 
         case Qt::Key_U:

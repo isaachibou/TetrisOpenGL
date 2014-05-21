@@ -33,13 +33,14 @@ int main(int argc, char *argv[])
     {
         /** Spawn the Shape **/
         win.GenShape();
+        win.GenStock();
 
-        for(int i=4;i<43;i++)
+        for(int i=4;i<44;i++)
         {
              /** Drop the Shape **/
             if( !win.Detect(i) )
             {
-                usleep(100000);
+                usleep(win.getGame().getFrequency());
                 win.Drop(i);
                 app.processEvents();
                 system("cls");
@@ -48,9 +49,14 @@ int main(int argc, char *argv[])
             else
             {
                 win.Land(i);
-                win.Clear("Ghost");
+                usleep(10000);
                 break;
             }
+        }
+
+        if(win.CleanFullLine() )
+        {
+             win.Clear("Ghost");
         }
      }
 

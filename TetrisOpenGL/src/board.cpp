@@ -146,16 +146,13 @@ Board::LandShape(Board Ghost, int h, int i)
     int j=i-4;
     int end = j +h;
 
+
     if(i == 4 && h == 1 && this->Floor[1] != 0)
     {
         for(j=j;j<i;j++)
         {
             this->Floor[j-1] = this->Floor[j-1] + Ghost.getFloor(j);
         }
-    }
-    if(h == 1)
-    {
-        this->Floor[i-4] = this->Floor[i-4] + Ghost.getFloor(i-4);
     }
     else
     {
@@ -172,10 +169,13 @@ Board::DetectCollision(Board Ghost, int h, int i)
 {
     bool crash = 0;
     int j=i-4;
-    int laps = j+h;
+    int laps = j + h;
     if(laps > 40) { laps = 40; }
-    if( i == 44-h)
-    { return crash=1; }
+
+    if( i == 44 - h)
+    {
+      return crash = 1;
+    }
     else
     {
         for(j=j;j<laps;j++)
@@ -188,7 +188,6 @@ Board::DetectCollision(Board Ghost, int h, int i)
     }
 
     return crash;
-
 }
 
 void
@@ -233,6 +232,27 @@ Board::MoveRight()
             }
     }
 
+}
+
+int
+Board::ClearFullLines()
+{
+    int Lines = 0;
+
+    for(int i=43;i>4;i--)
+    {
+        if(this->Floor[i] == (1023) )
+        {
+            Lines++;
+            this->Floor[i] = 0;
+            for(int j=i;j>0;j--)
+            {
+                this->Floor[j] = this->Floor[j-1];
+            }
+        }
+    }
+
+    return Lines;
 }
 
     // Display

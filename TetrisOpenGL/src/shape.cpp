@@ -47,6 +47,23 @@ Shape::setOffSet( int value)
     this->OffSet = value;
 }
 
+int
+Shape::getRed()
+{
+    return this->red;
+}
+
+int
+Shape::getGreen()
+{
+    return this->green;
+}
+
+int
+Shape::getBlue()
+{
+    return this->blue;
+}
     // Calculation
 int*
 Shape::DevelopFloor(int i)
@@ -155,7 +172,7 @@ Shape::GetShape()
 {
     srand(time(NULL));
 
-    int randNum = rand() %(0+6);
+    int randNum = rand() %(0+7);
 
     for(int i=0;i<4;i++)
     {
@@ -163,4 +180,51 @@ Shape::GetShape()
     }
 
     this->index = randNum;
+    this->rotation = 0;
+    this->OffSet = 0;
+
+    switch(this->index)
+    {
+        case 0:
+            this->red = 0;
+            this->green = 0;
+            this->blue = 1;
+            break;
+
+        case 1:
+            this->red = 0;
+            this->green = 1;
+            this->blue = 1;
+            break;
+
+        case 2:
+            this->red = 1;
+            this->green = 0;
+            this->blue = 1;
+            break;
+
+        case 3:
+            this->red = 1;
+            this->green = 0;
+            this->blue = 0;
+            break;
+
+        case 4:
+            this->red = 0;
+            this->green = 1;
+            this->blue = 0;
+            break;
+
+        case 5:
+            this->red = 1   ;
+            this->green = 1;
+            this->blue = 0;
+            break;
+
+        case 6:
+            this->red = 1;
+            this->green = 1;
+            this->blue = 1;
+            break;
+    }
 }

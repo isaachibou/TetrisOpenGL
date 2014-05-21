@@ -35,6 +35,7 @@ public:
     bool DetectCollision(Board Ghost, int h, int i);
     void MoveLeft();
     void MoveRight();
+    int ClearFullLines();
 
 
     // Display

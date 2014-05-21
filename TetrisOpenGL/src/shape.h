@@ -21,6 +21,9 @@ public:
     void setLines(int i, int value);
     int getOffSet();
     void setOffSet( int value);
+    int getRed();
+    int getGreen();
+    int getBlue();
 
     // Calculation
     int* DevelopFloor(int i);
@@ -46,12 +49,15 @@ private:
     int rotation;
     int index;
     int OffSet;
+    int red;
+    int green;
+    int blue;
     int Collection[7][4][4]=
     {
         {   // I
-            {0,120,0,0},
+            {120,0,0,0},
             {16,16,16,16},
-            {0,0,120,0},
+            {120,0,0,0},
             {32,32,32,32}
         },
         {   // J

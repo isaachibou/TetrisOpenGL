@@ -24,41 +24,86 @@ int main(int argc, char *argv[])
     // Console Init
     system("mode con LINES=50 COLS=80");
 
+    int i = 4;
+
     Canvas win;
     win.show();
 
+    usleep(10000);
 
-
-    while(win.getSolid().getFloor(0) == 0)
+    while(win.getGame().getNew())
     {
-        /** Spawn the Shape **/
-        win.GenShape();
-        win.GenStock();
-
-        for(int i=4;i<44;i++)
+        while(win.getSolid().getFloor(0) == 0)
         {
-             /** Drop the Shape **/
-            if( !win.Detect(i) )
+            /* Init following the Game State */
+            if(win.getGame().getNew())
             {
-                usleep(win.getGame().getFrequency());
-                win.Drop(i);
-                app.processEvents();
-                system("cls");
-                win.getGhost().DrawConsoleBoard();
+                win.NewGame();
+
+                /* Empty Boards*/
+                win.Clear("Ghost");
+                win.Clear("Solid");
+
+                /* Reset Game */
+                win.ResetGame();
+                win.getGame().setLines(0);
+                win.getGame().setScore(0);
+                win.getGame().setLevel(1);
+
+                /* Restart a new game after a while ( wait the user to be ready) */
+                sleep(1);
+                win.GenShape();
+            }
+            else if(win.getGame().getStoring() == true)
+            {
+                win.GenStock();
+                win.Store();
             }
             else
             {
-                win.Land(i);
-                usleep(10000);
-                break;
+                /** Spawn the Shape **/
+                if(win.GenShape()) { break; }
             }
-        }
 
-        if(win.CleanFullLine() )
-        {
-             win.Clear("Ghost");
-        }
-     }
+            /* Start the Game */
+            for(i=4;i<44;i++)
+            {
+                if(win.getGame().getStoring() == true)
+                {
+                    break;
+                }
+                /** Drop the Shape **/
+                if( !win.Detect(i) )
+                {
+                    usleep(win.getGame().getFrequency());
+                    win.Drop(i);
+                    app.processEvents();
+                    system("cls");
+                    win.getGhost().DrawConsoleBoard();
+                }
+                else
+                {
+                    win.Land(i);
+                    usleep(10000);
+                    break;
+                }
+
+                if(win.getGame().getNew())
+                {
+                    break;
+                }
+            }
+
+            /* Points Computation */
+            if(win.CleanFullLine() )
+            {
+                 win.Clear("Ghost");
+                 win.getGame().UpdateLevel();
+            }
+         }
+            /* Game Over */
+            win.GameOver();
+    }
 
 
 

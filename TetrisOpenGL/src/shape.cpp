@@ -139,7 +139,19 @@ Shape::getLineRotation(int rotation, int index,int k)
 {
     return this->Collection[index][rotation][k];
 }
-    // Display
+
+
+    /* Operators */
+Shape&
+Shape::operator =(const Shape& s)
+{
+   this->index = s.index;
+   for(int i=0; i<0; i++)
+   {
+       this->Lines[i] = s.Lines[i];
+   }
+}
+            /* Display */
 void
 Shape::drawShape()
 {
@@ -170,8 +182,6 @@ Shape::drawShape()
 void
 Shape::GetShape()
 {
-    srand(time(NULL));
-
     int randNum = rand() %(0+7);
 
     for(int i=0;i<4;i++)
@@ -180,6 +190,64 @@ Shape::GetShape()
     }
 
     this->index = randNum;
+    this->rotation = 0;
+    this->OffSet = 0;
+
+    switch(this->index)
+    {
+        case 0:
+            this->red = 0;
+            this->green = 0;
+            this->blue = 1;
+            break;
+
+        case 1:
+            this->red = 0;
+            this->green = 1;
+            this->blue = 1;
+            break;
+
+        case 2:
+            this->red = 1;
+            this->green = 0;
+            this->blue = 1;
+            break;
+
+        case 3:
+            this->red = 1;
+            this->green = 0;
+            this->blue = 0;
+            break;
+
+        case 4:
+            this->red = 0;
+            this->green = 1;
+            this->blue = 0;
+            break;
+
+        case 5:
+            this->red = 1   ;
+            this->green = 1;
+            this->blue = 0;
+            break;
+
+        case 6:
+            this->red = 1;
+            this->green = 1;
+            this->blue = 1;
+            break;
+    }
+}
+
+void
+Shape::GetThisShape(int index)
+{
+    for(int i=0;i<4;i++)
+    {
+        this->Lines[i] = this->Collection[index][0][i];
+    }
+
+    this->index = index;
     this->rotation = 0;
     this->OffSet = 0;
 

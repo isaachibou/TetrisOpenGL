@@ -87,26 +87,6 @@ Canvas::Drop(int i)
 }
 
 void
-Canvas::Fall()
-{
-    int h = this->Current.getHeight();
-    for(int i=4;i<43;i++)
-    {
-//        if(this->Ghost.getFloor(i) != 0)
-//        {
-            if( !getSolid().DetectCollision(getGhost(),h,i) )
-            {
-                usleep(100000);
-                Drop(i);
-                system("cls");
-                getGhost().DrawConsoleBoard();
-
-            }
-//        }
-    }
-}
-
-void
 Canvas::Left()
 {
     int *tmp;
@@ -292,6 +272,29 @@ Canvas::Rotate()
 
 }
 
+void
+Canvas::GameOver()
+{
+    this->Tetris.setOver(true);
+}
+
+void
+Canvas::Store()
+{
+    this->Tetris.setStoring(!this->Tetris.getStoring());
+}
+
+void
+Canvas::StockCurrent()
+{
+    this->Tetris.setStoring(true);
+    this->Stock.setIndex(this->Current.getIndex());
+    for(int i=0; i<4; i++)
+    {
+        this->Stock.setLines(i,this->Current.getLines(i));
+    }
+}
+
 bool
 Canvas::Detect(int i)
 {
@@ -328,20 +331,27 @@ Canvas::getShapeHeigth()
     return this->Current.getHeight();
 }
 
-void
+bool
 Canvas::GenShape()
 {
     this->Current.GetShape();
     this->Current.setOffSet(0);
     bool b;
     b=Spawn(Current);
+
+    return b;
 }
 
-void
+bool
 Canvas::GenStock()
 {
-    this->Stock.GetShape();
-    this->Stock.setOffSet(0);
+    int index = this->Stock.getIndex();
+    this->Current.GetThisShape(index);
+    this->Current.setOffSet(0);
+    bool b;
+    b=Spawn(Current);
+
+    return b;
 }
 
 void
@@ -354,9 +364,33 @@ Canvas::Clear(string Board)
 bool
 Canvas::CleanFullLine()
 {
-    int score = this->Tetris.getScore();
-    score += this->Solid.ClearFullLines();
-    this->Tetris.setScore(score);
+    int currentLines = this->Tetris.getLines();
+    int Score = this->Tetris.getScore();
+
+
+
+    int Lines = this->Solid.ClearFullLines();
+
+    switch(Lines)
+    {
+        case 1:
+            Score += 40;
+            break;
+        case 2:
+            Score += 100;
+            break;
+        case 3:
+            Score += 200;
+            break;
+        case 4:
+            Score += 400;
+            break;
+    }
+
+    this->Tetris.setLines(Lines + currentLines);
+
+    this->Tetris.setScore(Score);
+
     return true;
 }
 
@@ -376,6 +410,27 @@ Canvas::LocateShapeY()
     }
 
 }
+    /* Game */
+void
+Canvas::Pause()
+{
+    this->Tetris.setPaused(!this->Tetris.getPaused());
+}
+
+void
+Canvas::NewGame()
+{
+    this->Tetris.setNew(!this->Tetris.getNew());
+}
+
+void
+Canvas::ResetGame()
+{
+    this->Tetris.setLines(0);
+    this->Tetris.setScore(0);
+    this->Tetris.setLevel(1);
+}
+
     /* Drawing */
 
 void
@@ -417,9 +472,6 @@ Canvas::initializeObjects()
     glScalef(0.04f, 0.04f, 0.1f);
     glTranslatef(-22,-22,0);
 
-    //    /** Spawn the Shape **/
-    //    GenShape();
-
 
 
 
@@ -430,21 +482,34 @@ void
 Canvas::render()
 {
     // Rendu des objets
-    pushMatrix();
-        drawFrame();
-    popMatrix();
-    pushMatrix();
-        drawBoard();
-    popMatrix();
-    pushMatrix();
-        drawGhost();
-    popMatrix();
-    pushMatrix();
-        drawStock();
-    popMatrix();
-    pushMatrix();
-        drawText();
-    popMatrix();
+
+    if(this->Tetris.isOver())
+    {
+        pushMatrix();
+            drawGameOver();
+        popMatrix();
+        pushMatrix();
+            drawBoard();
+        popMatrix();
+    }
+    else
+    {
+        pushMatrix();
+            drawBoard();
+        popMatrix();
+        pushMatrix();
+            drawGhost();
+        popMatrix();
+        pushMatrix();
+            drawFrame();
+        popMatrix();
+        pushMatrix();
+            drawStock();
+        popMatrix();
+        pushMatrix();
+            drawContext();
+        popMatrix();
+    }
 
 
 }
@@ -470,7 +535,10 @@ Canvas::drawFrame()
     glRecti(12.0f, 28.0f, 20.0f, 33.0f);
 
     glColor3f(0.0f, 0.0f, 0.0f);
-    glRecti(15.0f, 23.0f, 20.0f, 27.0f);
+    glRecti(12.0f, 22.0f, 20.0f, 27.0f);
+
+    glColor3f(0.0f, 0.0f, 0.0f);
+    glRecti(13.0f, 16.0f, 20.0f, 20.0f);
 
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_LIGHTING);
@@ -481,7 +549,10 @@ Canvas::drawBoard()
 {
     glDisable(GL_LIGHTING);
     glDisable(GL_DEPTH_TEST);
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
+    float opacity = 1.0f;
     int h=getSolid().getHeight();
     int w=getSolid().getWidth();
     int* tmp;
@@ -494,14 +565,6 @@ Canvas::drawBoard()
         {
             if(tmp[j] == 1)
             {
-//                glBegin(GL_LINE_LOOP);
-//                    glColor3f(1.0f, 1.0f, 1.0f);
-//                    glVertex3f(j,h-i-1,0.0f);
-//                    glVertex3f(j,h-i,0.0f);
-//                    glVertex3f(j+1,h-i,0.0f);
-//                    glVertex3f(j+1,h-i-1,0.0f);
-//                glEnd();
-
                 switch(this->Colors[i][j])
                 {
                     case 0:
@@ -532,7 +595,7 @@ Canvas::drawBoard()
                         red = 1; green = 1; blue = 1;
                         break;
                 }
-                glColor3f(red,green,blue);
+                glColor4f(red,green,blue,opacity);
                 glRecti(j,h-i-1,j+1,h-i);
             }
         }
@@ -558,15 +621,7 @@ Canvas::drawGhost()
         {
             if(tmp[j] == 1)
             {
-//                glBegin(GL_LINE_LOOP);
-//                    glColor3f(1.0f, 1.0f, 1.0f);
-//                    glVertex3f(j,h-i-1,0.0f);
-//                    glVertex3f(j,h-i,0.0f);
-//                    glVertex3f(j+1,h-i,0.0f);
-//                    glVertex3f(j+1,h-i-1,0.0f);
-//                glEnd();
                 glColor3f(this->Current.getRed(),this->Current.getGreen(),this->Current.getBlue());
-//                glColor3f(1.0f, 0.0f, 0.0f);
                 glRecti(j,h-i-1,j+1,h-i);
             }
         }
@@ -592,7 +647,7 @@ Canvas::drawStock()
             if(tmp[j] == 1)
             {
                 glColor3f(0.0f, 1.0f, 0.0f);
-                glRecti(j+13,h-i-1+24,j+14,h-i+24);
+                glRecti(j+12,h-i-1+17,j+13,h-i+17);
             }
         }
     }
@@ -602,24 +657,53 @@ Canvas::drawStock()
 }
 
 void
-Canvas::drawText()
+Canvas::drawContext()
 {
     glDisable(GL_LIGHTING);
     glDisable(GL_DEPTH_TEST);
 
     qglColor(Qt::white);
-    QString level = QString("LEVEL");
+    QString level = QString("Level");
     QString levelN = QString::number(this->Tetris.getLevel());
-    QString lines = QString("LINES");
-    QString linesN = QString::number(this->Tetris.getScore());
+    QString score = QString("Scores");
+    QString scoreN = QString::number(this->Tetris.getScore());
+    QString lines = QString("Lines");
+    QString linesN = QString::number(this->Tetris.getLines());
+    QString spare = QString("Spare");
 
     renderText(14, 37, 0, level, QFont("Arial", 12, QFont::Bold, false) );
     renderText(17, 35, 0, levelN, QFont("Arial", 12, QFont::Bold, false) );
-    renderText(14, 31, 0, lines, QFont("Arial", 12, QFont::Bold, false) );
-    renderText(17, 29, 0, linesN, QFont("Arial", 12, QFont::Bold, false) );
+    renderText(14, 31, 0, score, QFont("Arial", 12, QFont::Bold, false) );
+    renderText(17, 29, 0, scoreN, QFont("Arial", 12, QFont::Bold, false) );
+    renderText(14, 25, 0, lines, QFont("Arial", 12, QFont::Bold, false) );
+    renderText(17, 23, 0, linesN, QFont("Arial", 12, QFont::Bold, false) );
 
     glEnable(GL_DEPTH_TEST);
     glEnable(GL_LIGHTING);
+}
+
+void
+Canvas::drawGameOver()
+{
+    glDisable(GL_LIGHTING);
+    glDisable(GL_DEPTH_TEST);
+
+    qglColor(Qt::white);
+    QString gameOver = QString("GAME OVER");
+    QString game = QString("press N for a new game");
+    QString exit = QString("press Escape for exit");
+
+    renderText(10, 25, 0, gameOver, QFont("Arial", 45, QFont::Bold, false) );
+    renderText(14, 19, 0, game, QFont("Arial", 20, QFont::Bold, false) );
+    renderText(14, 15, 0, exit, QFont("Arial", 20, QFont::Bold, false) );
+    glEnable(GL_DEPTH_TEST);
+    glEnable(GL_LIGHTING);
+}
+
+void
+Canvas::drawPause()
+{
+
 }
     /* Key Handling */
 void
@@ -643,18 +727,17 @@ Canvas::keyPressEvent( QKeyEvent* event )
             Rotate();
             break;
 
-        case Qt::Key_Down:
-            Clear("Solid");
+        case Qt::Key_P:
+            Pause();
             break;
 
-        case Qt::Key_U:
-            update();
-        break;
+        case Qt::Key_N:
+            NewGame();
+            break;
 
-        case Qt::Key_E:
-            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);	// Clean the screen and the depth buffer
-            glLoadIdentity();
-        break;
-
+        case Qt::Key_L:
+            StockCurrent();
+            GenStock();
+            break;
     }
 }

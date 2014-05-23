@@ -10,13 +10,13 @@
 class Shape
 {
 public:
-    // Constructors
+    /* Constructors */
     Shape();
 
-    // Destructor
+    /*  Destructor */
     ~Shape();
 
-    // Accessors
+    /* Accessors */
     int getLines(int i);
     void setLines(int i, int value);
     int getOffSet();
@@ -25,7 +25,10 @@ public:
     int getGreen();
     int getBlue();
 
-    // Calculation
+    /* Operators */
+    Shape& operator=(const Shape& s);
+
+    /* Calculation */
     int* DevelopFloor(int i);
     int getHeight();
     int getIndex();
@@ -35,16 +38,16 @@ public:
     int getLineRotation(int rotation, int index,int k);
 
 
-    // Display
+    /* Display */
     void drawShape();
 
-    // Types
+    /* Types */
     void GetShape();
+    void GetThisShape(int index);
 
 
 
 private:
-    // Attributes
     int Lines[4];
     int rotation;
     int index;

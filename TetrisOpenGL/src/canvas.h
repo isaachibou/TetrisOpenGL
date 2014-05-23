@@ -39,21 +39,26 @@ class Canvas : public GlWindow
         int getShapeHeigth();
 
         /* Actions */
-        void GenShape();
-        void GenStock();
+        bool GenShape();
+        bool GenStock();
         bool Spawn(Shape s);
         void Drop(int i);
-        void Fall();
         void Left();
         void Right();
         void Rotate();
+        void StockCurrent();
         bool Detect(int i);
         void Land(int i);
         void Clear(string Board);
         bool CleanFullLine();
 
+        /* Game */
+        void NewGame();
+        void Pause();
+        void ResetGame();
+        void GameOver();
+        void Store();
         /* Calculation */
-        int LocateShapeX();
         int LocateShapeY();
 
         /* Drawing */
@@ -65,7 +70,9 @@ class Canvas : public GlWindow
         void drawGhost();
         void drawStock();
         void drawFrame();
-        void drawText();
+        void drawContext();
+        void drawGameOver();
+        void drawPause();
 
         /* Key Handling */
         void keyPressEvent(QKeyEvent *);

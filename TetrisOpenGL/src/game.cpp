@@ -36,6 +36,7 @@ Game::setLines(int value)
     this->lines = value;
 }
 
+
 int
 Game::getLevel()
 {

@@ -101,6 +101,10 @@ int main(int argc, char *argv[])
         }
             /* Game Over */
             win.GameOver();
+            QEventLoop il;
+            QTimer::singleShot(5000, &il, SLOT(quit()));
+            il.exec();
+
 
     }
 

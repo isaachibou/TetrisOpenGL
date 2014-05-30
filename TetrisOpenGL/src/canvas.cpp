@@ -731,7 +731,12 @@ Canvas::keyPressEvent( QKeyEvent* event )
             break;
 
         case Qt::Key_N:
+        if(this->Tetris.isOver())
+        {
             NewGame();
+            GameOver();
+        }
+        else { NewGame(); }
             break;
 
     }

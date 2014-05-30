@@ -240,59 +240,17 @@ Shape::GetShape()
 }
 
 void
-Shape::GetThisShape(int index)
+Shape::GetThisShape(Shape s)
 {
     for(int i=0;i<4;i++)
     {
-        this->Lines[i] = this->Collection[index][0][i];
+        this->Lines[i] = s.getLines(i);
     }
 
-    this->index = index;
+    this->index = s.getIndex();
     this->rotation = 0;
     this->OffSet = 0;
-
-    switch(this->index)
-    {
-        case 0:
-            this->red = 0;
-            this->green = 0;
-            this->blue = 1;
-            break;
-
-        case 1:
-            this->red = 0;
-            this->green = 1;
-            this->blue = 1;
-            break;
-
-        case 2:
-            this->red = 1;
-            this->green = 0;
-            this->blue = 1;
-            break;
-
-        case 3:
-            this->red = 1;
-            this->green = 0;
-            this->blue = 0;
-            break;
-
-        case 4:
-            this->red = 0;
-            this->green = 1;
-            this->blue = 0;
-            break;
-
-        case 5:
-            this->red = 1   ;
-            this->green = 1;
-            this->blue = 0;
-            break;
-
-        case 6:
-            this->red = 1;
-            this->green = 1;
-            this->blue = 1;
-            break;
-    }
+    this->red = s.getRed();
+    this->green = s.getGreen();
+    this->blue = s.getBlue();
 }

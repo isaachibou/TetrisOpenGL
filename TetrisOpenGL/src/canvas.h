@@ -40,15 +40,15 @@ class Canvas : public GlWindow
 
         /* Actions */
         bool GenShape();
-        bool GenStock();
+        void GenStock();
         bool Spawn(Shape s);
         void Drop(int i);
         void Left();
         void Right();
         void Rotate();
-        void StockCurrent();
         bool Detect(int i);
         void Land(int i);
+        void Down();
         void Clear(string Board);
         bool CleanFullLine();
 
@@ -58,6 +58,8 @@ class Canvas : public GlWindow
         void ResetGame();
         void GameOver();
         void Store();
+        void updateContext();
+
         /* Calculation */
         int LocateShapeY();
 
@@ -76,6 +78,7 @@ class Canvas : public GlWindow
 
         /* Key Handling */
         void keyPressEvent(QKeyEvent *);
+        void keyReleaseEvent(QKeyEvent *);
 };
 
 

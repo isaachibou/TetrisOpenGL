@@ -43,7 +43,7 @@ public:
 
     /* Types */
     void GetShape();
-    void GetThisShape(int index);
+    void GetThisShape(Shape s);
 
 
 
@@ -85,9 +85,9 @@ private:
         {
             // L
             {16,112,0,0},
-            {48,16,16,0},
+            {32,32,48,0},
             {112,64,0,0},
-            {96,64,64,0}
+            {96,32,32,0}
         },
         {   // Z
             {96,48,0,0},

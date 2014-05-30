@@ -5,10 +5,11 @@ Game::Game()
     this->score = 0;
     this->level = 1;
     this->lines = 0;
-    this->fallFrequency = 50000;
+    this->fallFrequency = 100;
     this->Pause = false;
     this->New = true;
     this->Storing = false;
+    this->Over = false;
 }
 
 int
@@ -74,10 +75,12 @@ Game::setStoring(bool b)
 void
 Game::UpdateLevel()
 {
-    if(this->lines == this->level * 10 )
+    int test = this->level * 10;
+    int save = this->level;
+    if(this->lines == test )
     {
-        this->level=this->level+1;
-        this->fallFrequency -= 100*this->level;
+        this->setLevel(save+1);
+        this->setFrequency( this->fallFrequency - 5);
     }
 }
 

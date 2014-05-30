@@ -6,6 +6,8 @@
 #include <windows.h>
 #include <unistd.h>
 #include <time.h>
+#include <qtimer.h>
+
 
 #include "board.h"
 #include "shape.h"
@@ -29,7 +31,6 @@ int main(int argc, char *argv[])
     Canvas win;
     win.show();
 
-    usleep(10000);
 
     while(win.getGame().getNew())
     {
@@ -52,12 +53,8 @@ int main(int argc, char *argv[])
 
                 /* Restart a new game after a while ( wait the user to be ready) */
                 sleep(1);
-                win.GenShape();
-            }
-            else if(win.getGame().getStoring() == true)
-            {
                 win.GenStock();
-                win.Store();
+                win.GenShape();
             }
             else
             {
@@ -68,23 +65,24 @@ int main(int argc, char *argv[])
             /* Start the Game */
             for(i=4;i<44;i++)
             {
-                if(win.getGame().getStoring() == true)
-                {
-                    break;
-                }
                 /** Drop the Shape **/
                 if( !win.Detect(i) )
                 {
-                    usleep(win.getGame().getFrequency());
+                    QEventLoop loop;
+                    QTimer::singleShot(win.getGame().getFrequency(), &loop, SLOT(quit()));
+                    loop.exec();
+
                     win.Drop(i);
-                    app.processEvents();
-                    system("cls");
-                    win.getGhost().DrawConsoleBoard();
+                    app.processEvents(); 
                 }
                 else
                 {
                     win.Land(i);
-                    usleep(10000);
+
+                    QEventLoop l;
+                    QTimer::singleShot(100, &l, SLOT(quit()));
+                    l.exec();
+
                     break;
                 }
 
@@ -98,11 +96,12 @@ int main(int argc, char *argv[])
             if(win.CleanFullLine() )
             {
                  win.Clear("Ghost");
-                 win.getGame().UpdateLevel();
+                 win.updateContext();
             }
-         }
+        }
             /* Game Over */
             win.GameOver();
+
     }
 
 

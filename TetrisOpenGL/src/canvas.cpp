@@ -7,27 +7,20 @@
 using namespace std;
 
 
-GLfloat angle1 = 30.0f;
-GLfloat angle2 = 20.0f;
-
-const GLfloat g_AngleSpeed = 10.0f;
-
-
-Basis* g_Basis;
+int speedSave = 0;
 
 
 Canvas::Canvas()
 {
-    setWindowTitle(trUtf8("IN55-Canvas"));
+    setWindowTitle(trUtf8("Tetris OpenGL"));
 
-    g_Basis = new Basis( 10.0 );
 
 }
 
 
 Canvas::~Canvas()
 {
-    delete g_Basis;
+
 }
 
     /* Access */
@@ -273,6 +266,13 @@ Canvas::Rotate()
 }
 
 void
+Canvas::Down()
+{
+   speedSave = this->Tetris.getFrequency();
+   this->Tetris.setFrequency(speedSave/5);
+}
+
+void
 Canvas::GameOver()
 {
     this->Tetris.setOver(true);
@@ -285,14 +285,9 @@ Canvas::Store()
 }
 
 void
-Canvas::StockCurrent()
+Canvas::updateContext()
 {
-    this->Tetris.setStoring(true);
-    this->Stock.setIndex(this->Current.getIndex());
-    for(int i=0; i<4; i++)
-    {
-        this->Stock.setLines(i,this->Current.getLines(i));
-    }
+    this->Tetris.UpdateLevel();
 }
 
 bool
@@ -334,24 +329,24 @@ Canvas::getShapeHeigth()
 bool
 Canvas::GenShape()
 {
-    this->Current.GetShape();
+
+    this->Current.GetThisShape(this->Stock);
     this->Current.setOffSet(0);
+
+    this->Stock.GetShape();
+    this->Stock.setOffSet(0);
+
     bool b;
     b=Spawn(Current);
 
     return b;
 }
 
-bool
+void
 Canvas::GenStock()
 {
-    int index = this->Stock.getIndex();
-    this->Current.GetThisShape(index);
-    this->Current.setOffSet(0);
-    bool b;
-    b=Spawn(Current);
-
-    return b;
+    this->Stock.GetShape();
+    this->Stock.setOffSet(0);
 }
 
 void
@@ -646,7 +641,7 @@ Canvas::drawStock()
         {
             if(tmp[j] == 1)
             {
-                glColor3f(0.0f, 1.0f, 0.0f);
+                glColor3f(this->Stock.getRed(), this->Stock.getGreen(), this->Stock.getBlue());
                 glRecti(j+12,h-i-1+17,j+13,h-i+17);
             }
         }
@@ -727,6 +722,10 @@ Canvas::keyPressEvent( QKeyEvent* event )
             Rotate();
             break;
 
+        case Qt::Key_Down:
+            Down();
+            break;
+
         case Qt::Key_P:
             Pause();
             break;
@@ -735,9 +734,14 @@ Canvas::keyPressEvent( QKeyEvent* event )
             NewGame();
             break;
 
-        case Qt::Key_L:
-            StockCurrent();
-            GenStock();
-            break;
+    }
+}
+
+void
+Canvas::keyReleaseEvent(QKeyEvent * event)
+{    
+    if(event->key() == Qt::Key_Down)
+    {
+      this->Tetris.setFrequency(speedSave);
     }
 }

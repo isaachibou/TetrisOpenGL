@@ -13,6 +13,7 @@
 #include "shape.h"
 #include "GlWindow.h"
 #include "canvas.h"
+#include "Player.h"
 
 #include <iostream>
 
@@ -31,6 +32,7 @@ int main(int argc, char *argv[])
     Canvas win;
     win.show();
 
+    Player ia(win);
 
     while(win.getGame().getNew())
     {
@@ -55,6 +57,7 @@ int main(int argc, char *argv[])
                 sleep(1);
                 win.GenStock();
                 win.GenShape();
+                
             }
             else
             {
@@ -73,6 +76,10 @@ int main(int argc, char *argv[])
                     loop.exec();
 
                     win.Drop(i);
+                    
+                    //IA plays
+                    ia.play();
+                    
                     app.processEvents(); 
                 }
                 else

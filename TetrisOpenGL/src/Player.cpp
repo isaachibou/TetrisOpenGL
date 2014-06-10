@@ -67,7 +67,7 @@ int Player::getCurrentRow(Board ghost){
     int sizeLine = 0;
     for(int i=0;i<ghost.getHeight();i++){
         if(getLineSize(ghost.getFloor(i))>sizeLine){
-            sizeLine=getLineSize(ghost.getFloor(i));
+            sizeLine=getLineSize(ghost.getFloor(i),ghost.getWidth());
             biggestLine=i;
         }
     }

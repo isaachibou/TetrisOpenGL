@@ -1,7 +1,5 @@
 #include "Canvas.h"
 
-#include "Shapes/Basis.h"
-
 #include <iostream>
 
 using namespace std;

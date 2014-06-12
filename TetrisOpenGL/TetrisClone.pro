@@ -21,14 +21,7 @@ OBJECTS_DIR = obj
 HEADERS += \
     ../Common/GlFramework.h \
     ../Common/GlWindow.h \
-	../Common/LF_String.h \
-#    ../Common/Shapes/Shape.h \
-#    ../Common/Shapes/ParametricShape.h \
-#    ../Common/Shapes/Basis.h \
-#    ../Common/Shapes/Cubes.h \
-#    ../Common/Shapes/Cylinder.h \
-#    ../Common/Shapes/Pyramid.h \
-#    ../Common/Shapes/Star.h \
+    ../Common/LF_String.h \
     src/canvas.h \
     src/board.h \
     src/shape.h \
@@ -37,19 +30,9 @@ HEADERS += \
 SOURCES += \
     ../Common/GlFramework.cpp \
     ../Common/GlWindow.cpp \
-	../Common/LF_String.cpp \
-#    ../Common/Shapes/Shape.cpp \
-#    ../Common/Shapes/ParametricShape.cpp \
-#    ../Common/Shapes/Basis.cpp \
-#    ../Common/Shapes/Cubes.cpp \
-#    ../Common/Shapes/Cylinder.cpp \
-#    ../Common/Shapes/Pyramid.cpp \
-#    ../Common/Shapes/Star.cpp \
+    ../Common/LF_String.cpp \
     src/main.cpp \
     src/canvas.cpp \
     src/board.cpp \
     src/shape.cpp \
     src/game.cpp
-
-FORMS += \
-    src/window.ui

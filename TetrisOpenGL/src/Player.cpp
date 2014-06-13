@@ -1,35 +1,24 @@
-//
-//  Player.cpp
-//  Tetris
-//
-//  Created by Thibault Miclo on 07/06/2014.
-//  Copyright (c) 2014 to52. All rights reserved.
-//
-
 #include "Player.h"
 
-Player::Player(Canvas win){
+Player::Player(){
     isTurnOver=false;
-    game=win;
 }
 
 Player::~Player(){
-    
+
 }
 
-void Player::play(){
-    Board ghost=game.getGhost();
-    Board solid=game.getSolid();
+string Player::play(Board ghost, Board solid){
     int current = getCurrentRow(ghost);
     int target = getBestRow(solid);
     int move = target - current;
     if(move>0)
     {
-        ghost.MoveLeft();
+        return "left";
     }
     else if(move<0)
     {
-        ghost.MoveRight();
+         return "right";
     }
 }
 
@@ -37,8 +26,8 @@ int Player::getBestRow(Board solid){
     int rows[solid.getWidth()];
     for(int i=0;i<solid.getWidth();i++)
         rows[i]=0;
-    
-    
+
+
     for(int i=0;i<solid.getHeight();i++){
         for(int j=0;j<solid.getWidth();j++){
             rows[j]+=getByte(j,solid.getFloor(i));
@@ -66,7 +55,7 @@ int Player::getCurrentRow(Board ghost){
     int biggestLine = 0;
     int sizeLine = 0;
     for(int i=0;i<ghost.getHeight();i++){
-        if(getLineSize(ghost.getFloor(i))>sizeLine){
+        if(getLineSize(ghost.getFloor(i),ghost.getWidth())>sizeLine){
             sizeLine=getLineSize(ghost.getFloor(i),ghost.getWidth());
             biggestLine=i;
         }

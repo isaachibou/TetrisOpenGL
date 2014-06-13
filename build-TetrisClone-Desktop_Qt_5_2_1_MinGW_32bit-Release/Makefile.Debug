@@ -39,7 +39,7 @@ INSTALL_DIR     = $(COPY_DIR)
 
 ####### Output directory
 
-OBJECTS_DIR   = debug
+OBJECTS_DIR   = obj
 
 ####### Files
 
@@ -51,16 +51,16 @@ SOURCES       = ..\Common\GlFramework.cpp \
 		..\TetrisOpenGL\src\board.cpp \
 		..\TetrisOpenGL\src\shape.cpp \
 		..\TetrisOpenGL\src\game.cpp \
-		..\TetrisOpenGL\src\player.cpp 
-OBJECTS       = debug/GlFramework.o \
-		debug/GlWindow.o \
-		debug/LF_String.o \
-		debug/main.o \
-		debug/canvas.o \
-		debug/board.o \
-		debug/shape.o \
-		debug/game.o \
-		debug/player.o
+		..\TetrisOpenGL\src\Player.cpp 
+OBJECTS       = obj/GlFramework.o \
+		obj/GlWindow.o \
+		obj/LF_String.o \
+		obj/main.o \
+		obj/canvas.o \
+		obj/board.o \
+		obj/shape.o \
+		obj/game.o \
+		obj/Player.o
 
 DIST          = 
 QMAKE_TARGET  = Tetris
@@ -93,7 +93,7 @@ $(DESTDIR_TARGET):  $(OBJECTS)
 	$(LINKER) $(LFLAGS) -o $(DESTDIR_TARGET) $(OBJECTS)  $(LIBS)
 
 qmake: FORCE
-	@$(QMAKE) -spec win32-g++ CONFIG+=debug -o Makefile.Debug ..\TetrisOpenGL\TetrisClone.pro
+	@$(QMAKE) -spec win32-g++ -o Makefile.Debug ..\TetrisOpenGL\TetrisClone.pro
 
 qmake_all: FORCE
 
@@ -101,7 +101,7 @@ dist:
 	$(ZIP) Tetris.zip $(SOURCES) $(DIST) ..\TetrisOpenGL\TetrisClone.pro ..\..\..\..\..\..\Qt\5.2.1\mingw48_32\mkspecs\features\spec_pre.prf ..\..\..\..\..\..\Qt\5.2.1\mingw48_32\mkspecs\qdevice.pri ..\..\..\..\..\..\Qt\5.2.1\mingw48_32\mkspecs\features\device_config.prf ..\..\..\..\..\..\Qt\5.2.1\mingw48_32\mkspecs\common\shell-win32.conf ..\..\..\..\..\..\Qt\5.2.1\mingw48_32\mkspecs\qconfig.pri ..\..\..\..\..\..\Qt\5.2.1\mingw48_32\mkspecs\modules\qt_lib_axbase.pri ..\..\..\..\..\..\Qt\5.2.1\mingw48_32\mkspecs\modules\qt_lib_axbase_private.pri ..\..\..\..\..\..\Qt\5.2.1\mingw48_32\mkspecs\modules\qt_lib_axcontainer.pri ..\..\..\..\..\..\Qt\5.2.1\mingw48_32\mkspecs\modules\qt_lib_axcontainer_private.pri ..\..\..\..\..\..\Qt\5.2.1\mingw48_32\mkspecs\modules\qt_lib_axserver.pri ..\..\..\..\..\..\Qt\5.2.1\mingw48_32\mkspecs\modules\qt_lib_axserver_private.pri ..\..\..\..\..\..\Qt\5.2.1\mingw48_32\mkspecs\modules\qt_lib_bluetooth.pri ..\..\..\..\..\..\Qt\5.2.1\mingw48_32\mkspecs\modules\qt_lib_bluetooth_private.pri ..\..\..\..\..\..\Qt\5.2.1\mingw48_32\mkspecs\modules\qt_lib_bootstrap_private.pri ..\..\..\..\..\..\Qt\5.2.1\mingw48_32\mkspecs\modules\qt_lib_clucene_private.pri ..\..\..\..\..\..\Qt\5.2.1\mingw48_32\mkspecs\modules\qt_lib_concurrent.pri ..\..\..\..\..\..\Qt\5.2.1\mingw48_32\mkspecs\modules\qt_lib_concurrent_private.pri ..\..\..\..\..\..\Qt\5.2.1\mingw48_32\mkspecs\modules\qt_lib_core.pri ..\..\..\..\..\..\Qt\5.2.1\mingw48_32\mkspecs\modules\qt_lib_core_private.pri ..\..\..\..\..\..\Qt\5.2.1\mingw48_32\mkspecs\modules\qt_lib_declarative.pri ..\..\..\..\..\..\Qt\5.2.1\mingw48_32\mkspecs\modules\qt_lib_declarative_private.pri ..\..\..\..\..\..\Qt\5.2.1\mingw48_32\mkspecs\modules\qt_lib_designer.pri ..\..\..\..\..\..\Qt\5.2.1\mingw48_32\mkspecs\modules\qt_lib_designer_private.pri ..\..\..\..\..\..\Qt\5.2.1\mingw48_32\mkspecs\modules\qt_lib_designercomponents_private.pri ..\..\..\..\..\..\Qt\5.2.1\mingw48_32\mkspecs\modules\qt_lib_gui.pri ..\..\..\..\..\..\Qt\5.2.1\mingw48_32\mkspecs\modules\qt_lib_gui_private.pri ..\..\..\..\..\..\Qt\5.2.1\mingw48_32\mkspecs\modules\qt_lib_help.pri ..\..\..\..\..\..\Qt\5.2.1\mingw48_32\mkspecs\modules\qt_lib_help_private.pri ..\..\..\..\..\..\Qt\5.2.1\mingw48_32\mkspecs\modules\qt_lib_multimedia.pri ..\..\..\..\..\..\Qt\5.2.1\mingw48_32\mkspecs\modules\qt_lib_multimedia_private.pri ..\..\..\..\..\..\Qt\5.2.1\mingw48_32\mkspecs\modules\qt_lib_multimediawidgets.pri ..\..\..\..\..\..\Qt\5.2.1\mingw48_32\mkspecs\modules\qt_lib_multimediawidgets_private.pri ..\..\..\..\..\..\Qt\5.2.1\mingw48_32\mkspecs\modules\qt_lib_network.pri ..\..\..\..\..\..\Qt\5.2.1\mingw48_32\mkspecs\modules\qt_lib_network_private.pri ..\..\..\..\..\..\Qt\5.2.1\mingw48_32\mkspecs\modules\qt_lib_nfc.pri ..\..\..\..\..\..\Qt\5.2.1\mingw48_32\mkspecs\modules\qt_lib_nfc_private.pri ..\..\..\..\..\..\Qt\5.2.1\mingw48_32\mkspecs\modules\qt_lib_opengl.pri ..\..\..\..\..\..\Qt\5.2.1\mingw48_32\mkspecs\modules\qt_lib_opengl_private.pri ..\..\..\..\..\..\Qt\5.2.1\mingw48_32\mkspecs\modules\qt_lib_openglextensions.pri ..\..\..\..\..\..\Qt\5.2.1\mingw48_32\mkspecs\modules\qt_lib_openglextensions_private.pri ..\..\..\..\..\..\Qt\5.2.1\mingw48_32\mkspecs\modules\qt_lib_platformsupport_private.pri ..\..\..\..\..\..\Qt\5.2.1\mingw48_32\mkspecs\modules\qt_lib_positioning.pri ..\..\..\..\..\..\Qt\5.2.1\mingw48_32\mkspecs\modules\qt_lib_positioning_private.pri ..\..\..\..\..\..\Qt\5.2.1\mingw48_32\mkspecs\modules\qt_lib_printsupport.pri ..\..\..\..\..\..\Qt\5.2.1\mingw48_32\mkspecs\modules\qt_lib_printsupport_private.pri ..\..\..\..\..\..\Qt\5.2.1\mingw48_32\mkspecs\modules\qt_lib_qml.pri ..\..\..\..\..\..\Qt\5.2.1\mingw48_32\mkspecs\modules\qt_lib_qml_private.pri ..\..\..\..\..\..\Qt\5.2.1\mingw48_32\mkspecs\modules\qt_lib_qmldevtools_private.pri ..\..\..\..\..\..\Qt\5.2.1\mingw48_32\mkspecs\modules\qt_lib_qmltest.pri ..\..\..\..\..\..\Qt\5.2.1\mingw48_32\mkspecs\modules\qt_lib_qmltest_private.pri ..\..\..\..\..\..\Qt\5.2.1\mingw48_32\mkspecs\modules\qt_lib_qtmultimediaquicktools_private.pri ..\..\..\..\..\..\Qt\5.2.1\mingw48_32\mkspecs\modules\qt_lib_quick.pri ..\..\..\..\..\..\Qt\5.2.1\mingw48_32\mkspecs\modules\qt_lib_quick_private.pri ..\..\..\..\..\..\Qt\5.2.1\mingw48_32\mkspecs\modules\qt_lib_quickparticles_private.pri ..\..\..\..\..\..\Qt\5.2.1\mingw48_32\mkspecs\modules\qt_lib_script.pri ..\..\..\..\..\..\Qt\5.2.1\mingw48_32\mkspecs\modules\qt_lib_script_private.pri ..\..\..\..\..\..\Qt\5.2.1\mingw48_32\mkspecs\modules\qt_lib_scripttools.pri ..\..\..\..\..\..\Qt\5.2.1\mingw48_32\mkspecs\modules\qt_lib_scripttools_private.pri ..\..\..\..\..\..\Qt\5.2.1\mingw48_32\mkspecs\modules\qt_lib_sensors.pri ..\..\..\..\..\..\Qt\5.2.1\mingw48_32\mkspecs\modules\qt_lib_sensors_private.pri ..\..\..\..\..\..\Qt\5.2.1\mingw48_32\mkspecs\modules\qt_lib_serialport.pri ..\..\..\..\..\..\Qt\5.2.1\mingw48_32\mkspecs\modules\qt_lib_serialport_private.pri ..\..\..\..\..\..\Qt\5.2.1\mingw48_32\mkspecs\modules\qt_lib_sql.pri ..\..\..\..\..\..\Qt\5.2.1\mingw48_32\mkspecs\modules\qt_lib_sql_private.pri ..\..\..\..\..\..\Qt\5.2.1\mingw48_32\mkspecs\modules\qt_lib_svg.pri ..\..\..\..\..\..\Qt\5.2.1\mingw48_32\mkspecs\modules\qt_lib_svg_private.pri ..\..\..\..\..\..\Qt\5.2.1\mingw48_32\mkspecs\modules\qt_lib_testlib.pri ..\..\..\..\..\..\Qt\5.2.1\mingw48_32\mkspecs\modules\qt_lib_testlib_private.pri ..\..\..\..\..\..\Qt\5.2.1\mingw48_32\mkspecs\modules\qt_lib_uitools.pri ..\..\..\..\..\..\Qt\5.2.1\mingw48_32\mkspecs\modules\qt_lib_uitools_private.pri ..\..\..\..\..\..\Qt\5.2.1\mingw48_32\mkspecs\modules\qt_lib_webkit.pri ..\..\..\..\..\..\Qt\5.2.1\mingw48_32\mkspecs\modules\qt_lib_webkit_private.pri ..\..\..\..\..\..\Qt\5.2.1\mingw48_32\mkspecs\modules\qt_lib_webkitwidgets.pri ..\..\..\..\..\..\Qt\5.2.1\mingw48_32\mkspecs\modules\qt_lib_webkitwidgets_private.pri ..\..\..\..\..\..\Qt\5.2.1\mingw48_32\mkspecs\modules\qt_lib_widgets.pri ..\..\..\..\..\..\Qt\5.2.1\mingw48_32\mkspecs\modules\qt_lib_widgets_private.pri ..\..\..\..\..\..\Qt\5.2.1\mingw48_32\mkspecs\modules\qt_lib_winextras.pri ..\..\..\..\..\..\Qt\5.2.1\mingw48_32\mkspecs\modules\qt_lib_winextras_private.pri ..\..\..\..\..\..\Qt\5.2.1\mingw48_32\mkspecs\modules\qt_lib_xml.pri ..\..\..\..\..\..\Qt\5.2.1\mingw48_32\mkspecs\modules\qt_lib_xml_private.pri ..\..\..\..\..\..\Qt\5.2.1\mingw48_32\mkspecs\modules\qt_lib_xmlpatterns.pri ..\..\..\..\..\..\Qt\5.2.1\mingw48_32\mkspecs\modules\qt_lib_xmlpatterns_private.pri ..\..\..\..\..\..\Qt\5.2.1\mingw48_32\mkspecs\features\qt_functions.prf ..\..\..\..\..\..\Qt\5.2.1\mingw48_32\mkspecs\features\qt_config.prf ..\..\..\..\..\..\Qt\5.2.1\mingw48_32\mkspecs\win32-g++\qmake.conf ..\..\..\..\..\..\Qt\5.2.1\mingw48_32\mkspecs\features\spec_post.prf ..\..\..\..\..\..\Qt\5.2.1\mingw48_32\mkspecs\features\exclusive_builds.prf ..\..\..\..\..\..\Qt\5.2.1\mingw48_32\mkspecs\features\default_pre.prf ..\..\..\..\..\..\Qt\5.2.1\mingw48_32\mkspecs\features\win32\default_pre.prf ..\..\..\..\..\..\Qt\5.2.1\mingw48_32\mkspecs\features\resolve_config.prf ..\..\..\..\..\..\Qt\5.2.1\mingw48_32\mkspecs\features\exclusive_builds_post.prf ..\..\..\..\..\..\Qt\5.2.1\mingw48_32\mkspecs\features\default_post.prf ..\..\..\..\..\..\Qt\5.2.1\mingw48_32\mkspecs\features\build_pass.prf ..\..\..\..\..\..\Qt\5.2.1\mingw48_32\mkspecs\features\win32\console.prf ..\..\..\..\..\..\Qt\5.2.1\mingw48_32\mkspecs\features\win32\rtti.prf ..\..\..\..\..\..\Qt\5.2.1\mingw48_32\mkspecs\features\warn_on.prf ..\..\..\..\..\..\Qt\5.2.1\mingw48_32\mkspecs\features\qt.prf ..\..\..\..\..\..\Qt\5.2.1\mingw48_32\mkspecs\features\resources.prf ..\..\..\..\..\..\Qt\5.2.1\mingw48_32\mkspecs\features\moc.prf ..\..\..\..\..\..\Qt\5.2.1\mingw48_32\mkspecs\features\win32\opengl.prf ..\..\..\..\..\..\Qt\5.2.1\mingw48_32\mkspecs\features\uic.prf ..\..\..\..\..\..\Qt\5.2.1\mingw48_32\mkspecs\features\testcase_targets.prf ..\..\..\..\..\..\Qt\5.2.1\mingw48_32\mkspecs\features\exceptions.prf ..\..\..\..\..\..\Qt\5.2.1\mingw48_32\mkspecs\features\yacc.prf ..\..\..\..\..\..\Qt\5.2.1\mingw48_32\mkspecs\features\lex.prf ..\TetrisOpenGL\TetrisClone.pro C:/Qt/5.2.1/mingw48_32/lib/Qt5OpenGLd.prl C:/Qt/5.2.1/mingw48_32/lib/Qt5Widgetsd.prl C:/Qt/5.2.1/mingw48_32/lib/Qt5Guid.prl C:/Qt/5.2.1/mingw48_32/lib/Qt5Cored.prl  RESOURCES HEADERS SOURCES OBJECTIVE_SOURCES FORMS YACCSOURCES YACCSOURCES LEXSOURCES 
 
 clean: compiler_clean 
-	-$(DEL_FILE) debug\GlFramework.o debug\GlWindow.o debug\LF_String.o debug\main.o debug\canvas.o debug\board.o debug\shape.o debug\game.o debug\player.o
+	-$(DEL_FILE) obj\GlFramework.o obj\GlWindow.o obj\LF_String.o obj\main.o obj\canvas.o obj\board.o obj\shape.o obj\game.o obj\Player.o
 
 distclean: clean
 	-$(DEL_FILE) $(DESTDIR_TARGET)
@@ -133,7 +133,7 @@ compiler_clean:
 
 ####### Compile
 
-debug/GlFramework.o: ../Common/GlFramework.cpp ../Common/GlFramework.h \
+obj/GlFramework.o: ../Common/GlFramework.cpp ../Common/GlFramework.h \
 		../Common/AbstractFramework.h \
 		../glew-mingw/include/GL/glew.h \
 		../../../../../../Qt/5.2.1/mingw48_32/include/QtCore/QLinkedList \
@@ -266,9 +266,9 @@ debug/GlFramework.o: ../Common/GlFramework.cpp ../Common/GlFramework.h \
 		../../../../../../Qt/5.2.1/mingw48_32/include/QtGui/qsurfaceformat.h \
 		../Common/LF_String.h \
 		../Common/Types.h
-	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o debug\GlFramework.o ..\Common\GlFramework.cpp
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o obj\GlFramework.o ..\Common\GlFramework.cpp
 
-debug/GlWindow.o: ../Common/GlWindow.cpp ../Common/GlWindow.h \
+obj/GlWindow.o: ../Common/GlWindow.cpp ../Common/GlWindow.h \
 		../Common/GlFramework.h \
 		../Common/AbstractFramework.h \
 		../glew-mingw/include/GL/glew.h \
@@ -397,14 +397,14 @@ debug/GlWindow.o: ../Common/GlWindow.cpp ../Common/GlWindow.h \
 		../../../../../../Qt/5.2.1/mingw48_32/include/QtGui/QSurfaceFormat \
 		../../../../../../Qt/5.2.1/mingw48_32/include/QtGui/qsurfaceformat.h \
 		../../../../../../Qt/5.2.1/mingw48_32/include/QtGui/QKeyEvent
-	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o debug\GlWindow.o ..\Common\GlWindow.cpp
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o obj\GlWindow.o ..\Common\GlWindow.cpp
 
-debug/LF_String.o: ../Common/LF_String.cpp ../Common/LF_String.h \
+obj/LF_String.o: ../Common/LF_String.cpp ../Common/LF_String.h \
 		../Common/Types.h \
 		../Common/MemDefns.h
-	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o debug\LF_String.o ..\Common\LF_String.cpp
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o obj\LF_String.o ..\Common\LF_String.cpp
 
-debug/main.o: ../TetrisOpenGL/src/main.cpp ../../../../../../Qt/5.2.1/mingw48_32/include/QtWidgets/QApplication \
+obj/main.o: ../TetrisOpenGL/src/main.cpp ../../../../../../Qt/5.2.1/mingw48_32/include/QtWidgets/QApplication \
 		../../../../../../Qt/5.2.1/mingw48_32/include/QtWidgets/qapplication.h \
 		../../../../../../Qt/5.2.1/mingw48_32/include/QtCore/qcoreapplication.h \
 		../../../../../../Qt/5.2.1/mingw48_32/include/QtCore/qglobal.h \
@@ -548,9 +548,9 @@ debug/main.o: ../TetrisOpenGL/src/main.cpp ../../../../../../Qt/5.2.1/mingw48_32
 		../TetrisOpenGL/src/canvas.h \
 		../TetrisOpenGL/src/game.h \
 		../TetrisOpenGL/src/Player.h
-	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o debug\main.o ..\TetrisOpenGL\src\main.cpp
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o obj\main.o ..\TetrisOpenGL\src\main.cpp
 
-debug/canvas.o: ../TetrisOpenGL/src/canvas.cpp ../TetrisOpenGL/src/Canvas.h \
+obj/canvas.o: ../TetrisOpenGL/src/canvas.cpp ../TetrisOpenGL/src/Canvas.h \
 		../Common/GlWindow.h \
 		../Common/GlFramework.h \
 		../Common/AbstractFramework.h \
@@ -683,19 +683,19 @@ debug/canvas.o: ../TetrisOpenGL/src/canvas.cpp ../TetrisOpenGL/src/Canvas.h \
 		../TetrisOpenGL/src/board.h \
 		../TetrisOpenGL/src/shape.h \
 		../TetrisOpenGL/src/game.h
-	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o debug\canvas.o ..\TetrisOpenGL\src\canvas.cpp
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o obj\canvas.o ..\TetrisOpenGL\src\canvas.cpp
 
-debug/board.o: ../TetrisOpenGL/src/board.cpp ../TetrisOpenGL/src/board.h \
+obj/board.o: ../TetrisOpenGL/src/board.cpp ../TetrisOpenGL/src/board.h \
 		../TetrisOpenGL/src/shape.h
-	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o debug\board.o ..\TetrisOpenGL\src\board.cpp
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o obj\board.o ..\TetrisOpenGL\src\board.cpp
 
-debug/shape.o: ../TetrisOpenGL/src/shape.cpp ../TetrisOpenGL/src/shape.h
-	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o debug\shape.o ..\TetrisOpenGL\src\shape.cpp
+obj/shape.o: ../TetrisOpenGL/src/shape.cpp ../TetrisOpenGL/src/shape.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o obj\shape.o ..\TetrisOpenGL\src\shape.cpp
 
-debug/game.o: ../TetrisOpenGL/src/game.cpp ../TetrisOpenGL/src/game.h
-	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o debug\game.o ..\TetrisOpenGL\src\game.cpp
+obj/game.o: ../TetrisOpenGL/src/game.cpp ../TetrisOpenGL/src/game.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o obj\game.o ..\TetrisOpenGL\src\game.cpp
 
-debug/player.o: ../TetrisOpenGL/src/player.cpp ../TetrisOpenGL/src/Player.h \
+obj/Player.o: ../TetrisOpenGL/src/Player.cpp ../TetrisOpenGL/src/Player.h \
 		../TetrisOpenGL/src/canvas.h \
 		../Common/GlWindow.h \
 		../Common/GlFramework.h \
@@ -829,7 +829,7 @@ debug/player.o: ../TetrisOpenGL/src/player.cpp ../TetrisOpenGL/src/Player.h \
 		../TetrisOpenGL/src/board.h \
 		../TetrisOpenGL/src/shape.h \
 		../TetrisOpenGL/src/game.h
-	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o debug\player.o ..\TetrisOpenGL\src\player.cpp
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o obj\Player.o ..\TetrisOpenGL\src\Player.cpp
 
 ####### Install
 

@@ -22,7 +22,7 @@ using namespace std;
 
 int main(int argc, char *argv[])
 {
-	QApplication app(argc, argv);
+    QApplication app(argc, argv);
 
     // Console Init
     system("mode con LINES=50 COLS=80");
@@ -32,7 +32,7 @@ int main(int argc, char *argv[])
     Canvas win;
     win.show();
 
-    Player ia(win);
+    Player ia;
 
     while(win.getGame().getNew())
     {
@@ -57,7 +57,7 @@ int main(int argc, char *argv[])
                 sleep(1);
                 win.GenStock();
                 win.GenShape();
-                
+
             }
             else
             {
@@ -76,11 +76,22 @@ int main(int argc, char *argv[])
                     loop.exec();
 
                     win.Drop(i);
-                    
+
                     //IA plays
-                    ia.play();
-                    
-                    app.processEvents(); 
+                    string move = ia.play(win.getGhost(),win.getSolid());
+                    if(move == "left")
+                    {
+                          win.Left();
+                    }
+                    else if(move == "right") {
+                          win.Right();
+                    }
+
+
+
+
+
+                    app.processEvents();
                 }
                 else
                 {

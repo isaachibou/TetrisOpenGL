@@ -1,0 +1,12 @@
+INPUT(
+./release\GlFramework.o
+./release\GlWindow.o
+./release\LF_String.o
+./release\main.o
+./release\canvas.o
+./release\board.o
+./release\shape.o
+./release\game.o
+./release\bot.o
+./release\player.o
+);

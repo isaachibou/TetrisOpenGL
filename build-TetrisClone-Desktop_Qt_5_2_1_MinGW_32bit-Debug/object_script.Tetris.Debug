@@ -1,0 +1,12 @@
+INPUT(
+./debug\GlFramework.o
+./debug\GlWindow.o
+./debug\LF_String.o
+./debug\main.o
+./debug\canvas.o
+./debug\board.o
+./debug\shape.o
+./debug\game.o
+./debug\bot.o
+./debug\player.o
+);
